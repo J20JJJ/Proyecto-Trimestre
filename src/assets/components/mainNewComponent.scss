@@ -1,0 +1,41 @@
+.fondo {
+    // background-image: url("../img/wp8813120.webp");
+    color: white;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    
+
+    h1 {
+        color: yellow;
+    }
+    
+    .caja_pokemon {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 20px;
+
+        .pokemon{
+            // fondo caja
+            background-color: rgb(101, 90, 255);
+            
+            border: 1px solid black;
+            margin: 10px; 
+            text-align: center;
+
+            img{
+                background-color: white;
+                width: 100px; height: 100px;
+            }
+
+            p{
+                color: white;
+            }
+        }
+
+        .pokemon:hover{
+            filter: grayscale(70%);
+        }
+    }
+}
+
