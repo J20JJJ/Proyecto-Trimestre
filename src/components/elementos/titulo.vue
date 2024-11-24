@@ -1,14 +1,12 @@
 <template>
+ 
   <header class="puchadex-title">
     <h1>Puchadex</h1>
     <p class="subtitle">¡Tu enciclopedia gacha de Pokémon!</p>
   </header>
 </template>
 
-<script>
-export default {
-  name: "PuchadexTitle",
-};
+<script setup>
 </script>
 
 <style scoped>

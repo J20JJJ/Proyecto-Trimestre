@@ -1,4 +1,5 @@
 <template>
+    <!-- <sonidos /> -->
     <router-link :to="'/'">
         <boton_inicio button_text="HomePage" />
     </router-link>
@@ -6,6 +7,12 @@
     <router-link :to="{ name: 'mis-pokemons' }">
         <boton_inicio button_text="mis_pokemons" />
     </router-link>
+    <div
+        style="background-color: #ffcc00; color: #ffffff; padding: 10px 20px; border-radius: 10px; font-size: 24px; font-weight: bold; text-align: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        <div ref="animatedDiv" class="default-text">
+            {{ dinero }} Pokécoins
+        </div>
+    </div>
 
     <div class="pokemon-container">
         <div class="pokemon-id">{{ pokemonID }}</div>
@@ -19,6 +26,7 @@
 
         <button @click="tirar" class="throw-button">Tirar Pokébola</button>
     </div>
+    <!-- <fondo_animado></fondo_animado> -->
 </template>
 
 
@@ -27,6 +35,10 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import boton_inicio from '@/components/elementos/boton_inicio.vue';
+import sonidos from '@/components/elementos/sonidos.vue';
+// import fondo_animado from '@/components/elementos/fondo_animado.vue';
+
+let dinero = 200;
 
 let pokemonImg = ref([]);
 let pokemonName = ref([]);
@@ -80,38 +92,93 @@ async function getPokemonData(misPokemons) {
         id: data.id
     };
 }
-
+import audioFile from '../sonido/ganar-tonos.mp3';
+import audioNoDinero from '../sonido/chicharra-error-incorrecto-.mp3';
 async function tirar() {
-    pokemonImg = [];
-    pokemonName.value = [];
-    pokemonID.value = [];
-    capture_rate.value = []
-    try {
+    if (dinero < 100) {
+        const audio = new Audio(audioNoDinero);
+        audio.play()
+        animateText();
+    } else {
+        dinero -= 100;
+        const audio = new Audio(audioFile);
+        audio.play()
 
-        const pokemonWin = await tirarRuleta();
-        if (pokemonWin) {
+        pokemonImg = [];
+        pokemonName.value = [];
+        pokemonID.value = [];
+        capture_rate.value = []
+        try {
 
-            console.log("pokemonWin.idWin: ", pokemonWin.idWin)
-            const pokemonPromises = await getPokemonData(pokemonWin.idWin);
+            const pokemonWin = await tirarRuleta();
+            if (pokemonWin) {
 
-            capture_rate.value = (pokemonWin.porcentaje)
+                console.log("pokemonWin.idWin: ", pokemonWin.idWin)
+                const pokemonPromises = await getPokemonData(pokemonWin.idWin);
 
-            if (pokemonPromises) {
-                pokemonImg = (pokemonPromises.img);
-                pokemonName.value = (pokemonPromises.name);
-                pokemonID.value = (pokemonPromises.id);
+                capture_rate.value = (pokemonWin.porcentaje)
+
+                if (pokemonPromises) {
+                    pokemonImg = (pokemonPromises.img);
+                    pokemonName.value = (pokemonPromises.name);
+                    pokemonID.value = (pokemonPromises.id);
+                }
             }
+
+
+        } catch (error) {
+            console.error("Error al cargar:", error);
         }
-
-
-    } catch (error) {
-        console.error("Error al cargar:", error);
     }
 };
+const animatedDiv = ref(null); // Referencia al div que se va a animar
 
+function animateText() {
+    if (animatedDiv.value) {
+        // Añade la clase animada
+        animatedDiv.value.classList.add('animated-text');
+        // Quita la clase después de 2 segundos
+        setTimeout(() => {
+            animatedDiv.value.classList.remove('animated-text');
+        }, 1000); // Duración de la animación
+    }
+}
 </script>
 
 <style scoped>
+@keyframes animacionTexto {
+    22% {
+        transform: scale(1);
+        color: black;
+    }
+
+    25% {
+        transform: scale(1.5);
+        color: red;
+    }
+
+    50% {
+        transform: scale(1.5);
+        color: red;
+    }
+
+    75% {
+        transform: scale(1.5);
+        color: red;
+        /* transform: scale(1.5) rotate(5deg); */
+    }
+
+    100% {
+        transform: scale(1);
+        color: black;
+    }
+}
+
+.animated-text {
+    font-size: 2rem;
+    animation: animacionTexto 1s ease-in-out;
+}
+
 .pokemon-container {
     display: flex;
     flex-direction: column;

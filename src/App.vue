@@ -1,14 +1,17 @@
 <script setup>
 import titulo from './components/elementos/titulo.vue';
+import sonidos from './components/elementos/sonidos.vue';
 </script>
 
 <template>
   <header>
     <titulo></titulo>
-    <transition name="bounce">
+    <sonidos/>
+    <!-- <transition name="bounce">
       
       <RouterView/>
-    </transition>
+    </transition> -->
+    
   </header>
 </template>
 
