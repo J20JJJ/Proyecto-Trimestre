@@ -1,3 +1,8 @@
+.pokemon_bloquedao{
+    // filter: grayscale(100%) brightness(0.1);
+    filter: grayscale(80%) brightness(0.7);
+}
+
 .fondo {
     // background-image: url("../img/wp8813120.webp");
     color: white;
@@ -34,7 +39,7 @@
         }
 
         .pokemon:hover{
-            filter: grayscale(70%);
+            transform: scale(1.05); /* Agrega un pequeño efecto de aumento cuando pasa el ratón */
         }
     }
 }

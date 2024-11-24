@@ -21,7 +21,12 @@ const router = createRouter({
                 {
                     path: 'mis-pokemons',
                     name: 'mis-pokemons',
-                    component: () => import("./components/mis_pokemons.vue")
+                    component: () => import("./assets/pg/mis_pokemons.vue")
+                },
+                {
+                    path: 'gacha',
+                    name: 'gacha',
+                    component: () => import("./assets/pg/gacha.vue")
                 }
                 
             ]
