@@ -6,7 +6,7 @@ import sonidos from './components/elementos/sonidos.vue';
 <template>
   <header>
     <titulo></titulo>
-    <sonidos/>
+    <!-- <sonidos/> -->
     <transition name="bounce">
       
       <RouterView/>

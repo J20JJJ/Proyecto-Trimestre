@@ -1,5 +1,12 @@
 <template>
     <!-- <sonidos /> -->
+    <div>
+    <!-- Confetti solo se muestra si showConfetti es verdadero -->
+    <div v-confetti="{ particleCount: 200, force: 0.3 }"  v-if="showConfetti"/>
+    <div class="confetti-container-arriba"  v-confetti="{ particleCount: 200, force: 0.3 }"  v-if="showConfetti"/>
+    <div class="confetti-container-derecha"  v-confetti="{ particleCount: 200, force: 0.3 }"  v-if="showConfetti"/>
+   
+  </div>
     <router-link :to="'/'">
         <boton_inicio button_text="HomePage" />
     </router-link>
@@ -13,30 +20,35 @@
             {{ dinero }} Pokécoins
         </div>
     </div>
-
+    
     <div class="pokemon-container">
-        <div class="pokemon-id">{{ pokemonID }}</div>
 
-        <img :src="pokemonImg" alt="Imagen del Pokémon" class="pokemon-image" />
+        <img class="img_captura" src="../img/pokeballCarga.gif"  v-if="tirarGacha">
 
-        <div class="pokemon-details">
+        <div class="pokemon-id" v-if="!tirarGacha">{{ pokemonID }}</div>
+
+        <img :src="pokemonImg" alt="Imagen del Pokémon" class="pokemon-image" v-if="!tirarGacha"/>
+
+        <div class="pokemon-details" v-if="!tirarGacha">
             <p class="pokemon-name">{{ pokemonName }}</p>
             <p class="capture-rate">Probabilidad de captura: {{ capture_rate }}%</p>
         </div>
 
-        <button @click="tirar" class="throw-button">Tirar Pokébola</button>
+        <button @click="tirar" class="throw-button" v-if="!tirarGacha">Tirar Pokébola</button>
     </div>
     <!-- <fondo_animado></fondo_animado> -->
+
 </template>
-
-
-
 
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import boton_inicio from '@/components/elementos/boton_inicio.vue';
-import sonidos from '@/components/elementos/sonidos.vue';
-// import fondo_animado from '@/components/elementos/fondo_animado.vue';
+import axios from "axios";
+import { vConfetti } from '@neoconfetti/vue';
+
+const showConfetti = ref(false)
+
+const tirarGacha = ref(false)
 
 let dinero = 200;
 
@@ -47,32 +59,91 @@ let capture_rate = ref([]);
 
 let misPokemons = ref(['1', '123', '42', '200', '133']);
 
+
+function buscarLocalizaciones(pokemonId, regionBuscada) {
+    return new Promise((resolve, reject) => {
+        // Validamos que el Pokémon ID o nombre no esté vacío
+        if (!pokemonId) {
+            reject("Por favor ingresa un nombre o ID de Pokémon.");
+            return;
+        }
+
+        // Realizamos la solicitud a la API de PokeAPI
+        axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}/encounters`)
+            .then(response => {
+                // Extraemos las localizaciones de encuentro
+                const localizaciones = response.data.map(encounter => encounter.location_area.name);
+
+                // Filtramos las localizaciones que contienen 'alola'
+                const alolaLocations = localizaciones.filter(location => location.toLowerCase().includes(regionBuscada));
+
+                // Resolvemos la promesa con las localizaciones
+                resolve(alolaLocations);
+            })
+            .catch(error => {
+                // En caso de error, rechazamos la promesa con el mensaje de error
+                reject("Error al obtener los datos del Pokémon: " + error.message);
+            });
+    });
+}
+
+
+
 async function tirarRuleta() {
+    showConfetti.value = false;
+    tirarGacha.value = true;
+
     console.log("entra!!!");
     let index;
     let porcentaje;
+    let esDeLaRegion = false;
+
+    let regionBuscada = 'alola';
+
     while (true) {
-        index = Math.floor(Math.random() * (1025))
+        index = Math.floor(Math.random() * 1025);
         console.log("index: ", index);
 
-        const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${index}/`);
-        const data = await response.json();
-        let capture_rate = data.capture_rate;
+        try {
+            // Esperamos la respuesta de buscarLocalizaciones
+            const localizaciones = await buscarLocalizaciones(index, regionBuscada);
 
-        porcentaje = (capture_rate) / 255 * 100;
+            // Comprobamos si tiene alguna localización 'alola'
+            if (localizaciones.length > 0) {
+                console.log("ALOLA");
+                esDeLaRegion = true;
+            } else {
+                console.log("No ALOLA");
+                esDeLaRegion = false;
+            }
 
-        console.log("capture_rate: ", capture_rate);
-        console.log("porcentaje: ", porcentaje);
+            // Si es de la región, realizamos el cálculo del porcentaje
+            if (esDeLaRegion) {
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${index}/`);
+                const data = await response.json();
+                let capture_rate = data.capture_rate;
 
-        let win = Math.random() * 100;
+                porcentaje = (capture_rate / 255) * 100;
 
-        console.log("win: ", win);
+                console.log("capture_rate: ", capture_rate);
+                console.log("porcentaje: ", porcentaje);
 
-        if (win < porcentaje) {
-            console.log("GANAS!!!");
-            break;
+                let win = Math.random() * 100;
+                console.log("win: ", win);
+
+                // Si el número aleatorio es menor que el porcentaje, se gana
+                if (win < porcentaje) {
+                    console.log("GANAS!!!");
+                    showConfetti.value = true;
+                    tirarGacha.value = false;
+                    break;
+                }
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
+
     console.log("Sales!!!");
     let idWin = index;
     return {
@@ -80,6 +151,7 @@ async function tirarRuleta() {
         porcentaje
     };
 }
+
 
 async function getPokemonData(misPokemons) {
 
@@ -146,6 +218,26 @@ function animateText() {
 </script>
 
 <style scoped>
+.img_captura {
+    width: 45vh; /* Ajusta el ancho */
+    height: auto; /* Mantiene la proporción */
+    margin: 10px 0; /* Margen superior e inferior */
+}
+
+.confetti-container-derecha { 
+    position: fixed; 
+    right: 0; 
+    /* top: 50%; */
+    transform: translateY(-50%); 
+}
+
+.confetti-container-arriba { 
+    position: fixed; 
+    left: 50%; 
+    top: 0;
+    transform: translateX(-50%);
+}
+
 @keyframes animacionTexto {
     22% {
         transform: scale(1);
