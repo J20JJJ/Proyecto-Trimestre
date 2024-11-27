@@ -1,26 +1,28 @@
 <template>
-    <mainNewComponent :pokemonImg="pokemonImg" 
+    <mainNewComponent 
+    :pokemonImg="pokemonImg" 
     :pokemonName="pokemonName" 
     :pokemonID="pokemonID"
-     componente_actual="mis_pokemons" 
-    :misPokemons="misPokemons"/>
+    componente_actual="mis-pokemons" 
+    :misPokemons="misPokemons" />
 </template>
 
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import mainNewComponent from '@/components/visual/mainNewComponent.vue';
+import Cookies from 'js-cookie';
 
 let pokemonImg = ref([]);
 let pokemonName = ref([]);
 let pokemonID = ref([]);
 
-let misPokemons = ref(['1', '123', '42', '200', '133']);
+let misPokemons = ref([]);
 
 async function getPokemonData(misPokemons) {
     let img = []
     let name = []
     let id = []
-    for( let i = 0; i < misPokemons.value.length; i++){
+    for (let i = 0; i < misPokemons.value.length; i++) {
         console.log(misPokemons.value[i])
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${misPokemons.value[i]}/`);
         const data = await response.json();
@@ -37,17 +39,28 @@ async function getPokemonData(misPokemons) {
 
 onBeforeMount(async () => {
     try {
-        const pokemonPromises = await getPokemonData(misPokemons);
 
-        
+        const savedPokemons = Cookies.get('misPokemons');
+
+        if (savedPokemons) {
+
+            misPokemons.value = JSON.parse(savedPokemons);
+            console.log("Cookies leidas")
+            
+            const pokemonPromises = await getPokemonData(misPokemons);
+            
             if (pokemonPromises) {
                 pokemonImg.value.push(...pokemonPromises.img);
                 pokemonName.value.push(...pokemonPromises.name);
                 pokemonID.value.push(...pokemonPromises.id);
             }
 
-            console.log("pokemonImg: ",pokemonImg.value)
-      
+            console.log("pokemonImg: ", pokemonImg.value)
+
+        }
+
+
+
     } catch (error) {
         console.error("Error al cargar:", error);
     }

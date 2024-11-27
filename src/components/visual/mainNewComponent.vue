@@ -1,26 +1,27 @@
 <template>
     <div class="fondo">
-        
+
         <router-link :to="'/'" v-if="!bool_HomePage">
-            <boton_inicio button_text="HomePage" />
+            <boton_inicio button_text="HomePage" class="sticky-button" />
         </router-link>
 
         <router-link :to="{ name: 'gacha' }" v-if="!bool_gacha">
-            <boton_inicio button_text="gacha" />
+            <boton_inicio button_text="gacha" class="sticky-button" />
         </router-link>
 
         <router-link :to="{ name: 'mis-pokemons' }" v-if="!bool_mis_pokemons">
-            <boton_inicio button_text="mis_pokemons" />
+            <boton_inicio button_text="mis pokemons" class="sticky-button" />
         </router-link>
 
         <div class="caja_pokemon">
-            <div v-for="(pokemon, index) in pokemonImg" :key="pokemonID[index]" class="pokemon" :class="getClase(pokemonID[index])"
-                @click="$emit('toggle', pokemonID[index])">
-                <router-link :to="{ name: 'pokedex', params: { id: pokemonID[index] } }">
+            <div v-for="(pokemon, index) in pokemonImg" :key="pokemonID[index]" class="pokemon"
+                :class="getClase(pokemonID[index])" @click="$emit('toggle', pokemonID[index])">
+                <router-link :to="{ name: 'pokedex', params: { id: `${props.componente_actual}-${pokemonID[index]}` } }">
                     <img :src="pokemon" :alt="pokemonName[index]">
                     <p>{{ pokemonName[index] }}</p>
                     <p>{{ pokemonID[index] }}</p>
                 </router-link>
+
 
             </div>
         </div>
@@ -67,7 +68,7 @@ switch (props.componente_actual) {
         bool_gacha.value = false;
         break;
     }
-    case "mis_pokemons": {
+    case "mis-pokemons": {
         bool_HomePage.value = false;
         bool_mis_pokemons.value = true;
         bool_gacha.value = false;
@@ -75,10 +76,10 @@ switch (props.componente_actual) {
     }
 }
 
-function getClase(pokemon){
-    console.log("asas: ", props.misPokemons)
+function getClase(pokemon) {
+    console.log("asas: ", props.misPokemons[0])
     let bloqueado = true;
-    if(props.misPokemons.includes(pokemon.toString())){ 
+    if (props.misPokemons.includes(pokemon)) {
         bloqueado = false;
     }
     return {
@@ -86,7 +87,10 @@ function getClase(pokemon){
     }
 };
 
-
-
-
 </script>
+
+<style scoped>
+.sticky-button {
+    position: sticky;
+}
+</style>

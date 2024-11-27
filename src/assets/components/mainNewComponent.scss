@@ -3,12 +3,20 @@
     filter: grayscale(80%) brightness(0.7);
 }
 
+
 .fondo {
     // background-image: url("../img/wp8813120.webp");
     color: white;
     text-align: center;
     font-family: Arial, sans-serif;
     
+    .sticky-button {
+        margin-left: 2%;
+        position: sticky;
+        top: 20px; 
+        z-index: 10;
+        margin-bottom: 10px;
+    }
 
     h1 {
         color: yellow;

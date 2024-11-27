@@ -27,9 +27,15 @@
           </div>
         </div>
       </div>
-      <router-link :to="'/'">
-        <sus style='width: 100%;' :imgBTN="pokemonImg[0]" />
+
+      <router-link :to="{ name: 'mis-pokemons' }" v-if="!paginabool">
+        <sus style='width: 100%;' :imgBTN="pokemonImg[0]"/>
       </router-link>
+
+      <router-link :to="'/'" v-if="paginabool">
+        <sus style='width: 100%;' :imgBTN="pokemonImg[0]"/>
+      </router-link>
+
 
       <div class="pokemon-description screen">
         {{ description }}
@@ -60,7 +66,7 @@
       <div class="panel-header">Evolución</div>
       <div class="panel-row panel-evo scroll_evos">
         <div class="flex-center pokemon-sprite" v-for="(evolution, index) in pokemonEvolution" :key="index">
-          <router-link :to="{ name: 'pokedex', params: { id: evolution.id } }" style="display: contents;">
+          <router-link :to="{ name: 'pokedex', params: { id:  `${pagina}-${evolution.id}` } }" style="display: contents;">
             <div class="evo-num"> {{ evolution.id }}</div>
             <img :src="evolution.img" :alt="evolution.name" class="pokemon-sprite-evo" />
             <div class="name-evo">{{ evolution.name }}</div>
@@ -211,11 +217,12 @@ let description = ref([]);
 
 import { useRoute } from 'vue-router';
 const props = defineProps({
-    id: Number,
+  id: Number,
 });
 
 // import { watch } from 'vue-router';
-
+let paginabool = ref(true);
+const pagina = ref('');
 
 let route = useRoute();
 let pokemonID = props.id;
@@ -227,6 +234,25 @@ const pokemonIDProp = props.id;
 watch(
   () => route.params.id,
   async (newId, oldId) => {
+
+    let partes = newId.split('-'); 
+
+    pagina.value = partes.slice(0, -1).join("-");
+    let id = partes[partes.length - 1];
+    
+    switch (pagina.value) {
+      case 'HomePage': {
+        paginabool.value = true;
+        break;
+      }
+      case 'mis-pokemons': {
+        paginabool.value = false;
+        break;
+      }
+    }
+
+    newId = id;
+
     console.log('El id cambió de', oldId, 'a', newId)
     sacar_info(newId);
   },
@@ -303,7 +329,7 @@ async function getPokemonEvolution(indE) {
   }
 }
 
-async function sacar_info(pokemon1){
+async function sacar_info(pokemon1) {
 
   // Limpiar los datos anteriores antes de cargar nuevos
   pokemonImg.value = [];
@@ -314,60 +340,60 @@ async function sacar_info(pokemon1){
   const pokemon = await getPokemonData(pokemon1);
 
   if (pokemon) {
-      pokemonImg.value.push(pokemon.front_default);
-      pokemonImg.value.push(pokemon.front_female);
-      pokemonImg.value.push(pokemon.front_shiny);
-      pokemonImg.value.push(pokemon.front_shiny_female);
-      pokemonImg.value.push(pokemon.back_default);
-      pokemonImg.value.push(pokemon.back_female);
-      pokemonImg.value.push(pokemon.back_shiny);
-      pokemonImg.value.push(pokemon.back_shiny_female);
+    pokemonImg.value.push(pokemon.front_default);
+    pokemonImg.value.push(pokemon.front_female);
+    pokemonImg.value.push(pokemon.front_shiny);
+    pokemonImg.value.push(pokemon.front_shiny_female);
+    pokemonImg.value.push(pokemon.back_default);
+    pokemonImg.value.push(pokemon.back_female);
+    pokemonImg.value.push(pokemon.back_shiny);
+    pokemonImg.value.push(pokemon.back_shiny_female);
 
-      pokemonName.value = pokemon.name;
-      pokemonTipo.value.push(...pokemon.tipos);
-      pokemonAtaque.value.push(...pokemon.ataques);
+    pokemonName.value = pokemon.name;
+    pokemonTipo.value.push(...pokemon.tipos);
+    pokemonAtaque.value.push(...pokemon.ataques);
 
-      console.log("pokemonAtaque: ", pokemonAtaque.value)
+    console.log("pokemonAtaque: ", pokemonAtaque.value)
 
-      // Obtener la especie para obtener la evolución
-      const especie = await getPokemonEspecie(pokemon1);
-      if (especie) {
-        console.log("especie: ", especie)
-        // Obtener la evolución
-        const evolution = await getPokemonEvolution(especie.evolution_chain_url);
-        description = especie.description1
+    // Obtener la especie para obtener la evolución
+    const especie = await getPokemonEspecie(pokemon1);
+    if (especie) {
+      console.log("especie: ", especie)
+      // Obtener la evolución
+      const evolution = await getPokemonEvolution(especie.evolution_chain_url);
+      description = especie.description1
 
-        if (evolution) {
-          const evolutionIds = evolution.evolution_url.map(url => {
-            const parts = url.split('/');
-            return parts[parts.length - 2]; // Obtener el ID de la evolución
-          });
+      if (evolution) {
+        const evolutionIds = evolution.evolution_url.map(url => {
+          const parts = url.split('/');
+          return parts[parts.length - 2]; // Obtener el ID de la evolución
+        });
 
-          const pokemonPromises = evolutionIds.map(id => getPokemonData(id));
-          const pokemons = await Promise.all(pokemonPromises);
+        const pokemonPromises = evolutionIds.map(id => getPokemonData(id));
+        const pokemons = await Promise.all(pokemonPromises);
 
-          pokemons.forEach(pokemon => {
-            if (pokemon) {
-              pokemonEvolution.value.push({
-                img: pokemon.front_default,
-                name: pokemon.name,
-                id: pokemon.id
-              });
-            }
-          });
-          console.log("pokemonEvolution: ", pokemonEvolution.value)
-        }
+        pokemons.forEach(pokemon => {
+          if (pokemon) {
+            pokemonEvolution.value.push({
+              img: pokemon.front_default,
+              name: pokemon.name,
+              id: pokemon.id
+            });
+          }
+        });
+        console.log("pokemonEvolution: ", pokemonEvolution.value)
       }
     }
+  }
 }
 
 onBeforeMount(async () => {
   try {
     // Obtener la data del Pokémon
-   
+
     sacar_info(pokemonIDProp);
 
-    
+
   } catch (error) {
     console.error("Error al cargar la información del Pokémon:", error);
   }
