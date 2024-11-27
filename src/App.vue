@@ -1,6 +1,7 @@
 <script setup>
 import titulo from './components/elementos/titulo.vue';
 import sonidos from './components/elementos/sonidos.vue';
+import '@splidejs/vue-splide/css';
 </script>
 
 <template>

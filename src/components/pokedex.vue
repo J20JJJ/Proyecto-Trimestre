@@ -3,7 +3,7 @@
     <div class="panel left-panel">
       <div class="pokemon-name screen">
         {{ pokemonName }}
-        <span class="name-no">no. {{ route.params.id }}</span>
+        <span class="name-no">no. {{ idPokemon }}</span>
       </div>
 
       <div class="pokemon-sprite-container">
@@ -223,6 +223,7 @@ const props = defineProps({
 // import { watch } from 'vue-router';
 let paginabool = ref(true);
 const pagina = ref('');
+const idPokemon = ref('');
 
 let route = useRoute();
 let pokemonID = props.id;
@@ -238,7 +239,7 @@ watch(
     let partes = newId.split('-'); 
 
     pagina.value = partes.slice(0, -1).join("-");
-    let id = partes[partes.length - 1];
+    idPokemon.value = partes[partes.length - 1];
     
     switch (pagina.value) {
       case 'HomePage': {
@@ -251,7 +252,7 @@ watch(
       }
     }
 
-    newId = id;
+    newId = idPokemon.value;
 
     console.log('El id cambió de', oldId, 'a', newId)
     sacar_info(newId);

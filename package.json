@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@neoconfetti/vue": "^2.2.1",
+    "@splidejs/vue-splide": "^0.6.12",
     "axios": "^1.7.8",
     "js-cookie": "^3.0.5",
     "pokemons": "file:",

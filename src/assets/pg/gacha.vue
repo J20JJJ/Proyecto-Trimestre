@@ -27,7 +27,28 @@
     </div>
 
     <div class="pokemon-container">
-        <img class="img_captura" src="../img/pokeballCarga.gif" v-if="tirarGacha" />
+        <img class="img_captura" src="../img/pokeballCarga.gif" v-if="false" />
+
+
+        <Splide :options="{ 
+      width: '100%', 
+      perPage: 1, 
+      gap: 1, 
+      height: '100%',
+      type: 'loop', 
+      pagination: false, 
+      arrows: false, 
+      speed: 800, 
+      rewind: false, 
+      autoplay: true, 
+      interval: 200,
+      drag: false
+    }"  v-if="true" >
+      <SplideSlide v-for="i in 2" :key="i">
+        <img class="img_captura" src="/src/assets/img/pokeballCarga.gif" alt="">
+      </SplideSlide>
+    </Splide>
+
 
         <div class="pokemon-id" v-if="!tirarGacha">{{ pokemonID }}</div>
 
@@ -43,6 +64,7 @@
         </button>
     </div>
     <!-- <fondo_animado></fondo_animado> -->
+
 </template>
 
 <script setup>
