@@ -12,8 +12,10 @@
     "@neoconfetti/vue": "^2.2.1",
     "@splidejs/vue-splide": "^0.6.12",
     "axios": "^1.7.8",
+    "bootstrap": "^5.3.3",
     "js-cookie": "^3.0.5",
     "pokemons": "file:",
+    "sass": "^1.81.0",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5"
   },
