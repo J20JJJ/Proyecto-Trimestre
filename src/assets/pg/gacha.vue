@@ -27,39 +27,39 @@
     </div>
 
     <div class="pokemon-container">
-        <img class="img_captura" src="../img/pokeballCarga.gif" v-if="false" />
+        <img class="img_captura" src="../img/pokeballCarga.gif" v-if="!verResultado" />
 
 
-        <Splide :options="{ 
-      width: '100%', 
-      perPage: 1, 
-      gap: 1, 
-      height: '100%',
-      type: 'loop', 
-      pagination: false, 
-      arrows: false, 
-      speed: 800, 
-      rewind: false, 
-      autoplay: true, 
-      interval: 200,
-      drag: false
-    }"  v-if="true" >
-      <SplideSlide v-for="i in 2" :key="i">
-        <img class="img_captura" src="/src/assets/img/pokeballCarga.gif" alt="">
-      </SplideSlide>
-    </Splide>
+        <Splide :options="{
+            width: '100%',
+            perPage: 1,
+            gap: 1,
+            height: '100%',
+            type: 'loop',
+            pagination: false,
+            arrows: false,
+            speed: 800,
+            rewind: false,
+            autoplay: true,
+            interval: 200,
+            drag: false,
+            pauseOnHover: false
+        }" v-if="tirarGacha">
+            <SplideSlide v-for="i in pokemonsEscapadosIMG.length - 1" :key="i">
+                <img class="img_captura" :src="pokemonsEscapadosIMG[i]" alt="">
+            </SplideSlide>
+        </Splide>
 
+        <div class="pokemon-id" v-if="!tirarGacha && verResultado">{{ pokemonID }}</div>
 
-        <div class="pokemon-id" v-if="!tirarGacha">{{ pokemonID }}</div>
+        <img :src="pokemonImg" alt="Imagen del Pokémon" class="pokemon-image" v-if="!tirarGacha && verResultado" />
 
-        <img :src="pokemonImg" alt="Imagen del Pokémon" class="pokemon-image" v-if="!tirarGacha" />
-
-        <div class="pokemon-details" v-if="!tirarGacha">
+        <div class="pokemon-details" v-if="!tirarGacha && verResultado">
             <p class="pokemon-name">{{ pokemonName }}</p>
             <p class="capture-rate">Probabilidad de captura: {{ capture_rate }}%</p>
         </div>
 
-        <button @click="tirar" class="throw-button" v-if="!tirarGacha">
+        <button @click="tirar" class="throw-button" v-if="!tirarGacha && verResultado">
             Tirar Pokébola
         </button>
     </div>
@@ -78,6 +78,8 @@ const showConfetti = ref(false);
 
 const tirarGacha = ref(false);
 
+const verResultado = ref(true);
+
 let dinero = 200;
 
 let pokemonImg = ref([]);
@@ -87,15 +89,25 @@ let capture_rate = ref([]);
 
 let misPokemons = ref([]);
 
+let pokemonsEscapadosIMG = ref([]);
+
+
 const actualizarCookies = (idWin) => {
     const savedPokemons = Cookies.get("misPokemons");
     if (savedPokemons) {
         misPokemons.value = JSON.parse(savedPokemons);
         misPokemons.value.push(idWin)
+
+        if (misPokemons.value.includes(idWin)) {
+            dinero += 20;
+        }
     } else {
         misPokemons.value.push(idWin)
     }
 
+
+
+    misPokemons.value = [...new Set(misPokemons.value)].sort((a, b) => a - b);
     Cookies.set("misPokemons", JSON.stringify(misPokemons.value), { expires: 36500 });
     console.log("Cookies actualizadas")
 };
@@ -132,11 +144,15 @@ function buscarLocalizaciones(pokemonId, regionBuscada) {
     });
 }
 
+
 async function tirarRuleta() {
     showConfetti.value = false;
-    tirarGacha.value = true;
+    verResultado.value = false;
 
     console.log("entra!!!");
+
+    let pokemonsEscapados = []
+
     let index;
     let porcentaje;
     let esDeLaRegion = false;
@@ -158,6 +174,7 @@ async function tirarRuleta() {
             } else {
                 console.log("No ALOLA");
                 esDeLaRegion = false;
+                pokemonsEscapados.push(index);
             }
 
             // Si es de la región, realizamos el cálculo del porcentaje
@@ -180,8 +197,13 @@ async function tirarRuleta() {
                 if (win < porcentaje) {
                     console.log("GANAS!!!");
                     showConfetti.value = true;
-                    tirarGacha.value = false;
+                    pokemonsEscapados.push(index);
+
+                    getPokemonEscapados(pokemonsEscapados)
                     break;
+                } else {
+                    pokemonsEscapados.push(index);
+
                 }
             }
         } catch (error) {
@@ -197,6 +219,41 @@ async function tirarRuleta() {
         porcentaje,
     };
 }
+// ddd
+async function getPokemonEscapados(pokemonsEscapados) {
+    pokemonsEscapadosIMG.value = [];  // Reiniciar las imágenes al empezar a cargar
+
+    // Cargar cada imagen
+    for (let i = 0; i < pokemonsEscapados.length; i++) {
+        console.log(`Cargando Pokémon con ID: ${pokemonsEscapados[i]}`);
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonsEscapados[i]}/`);
+
+        if (!response.ok) {
+            console.error(`Error al cargar Pokémon con ID: ${pokemonsEscapados[i]}`);
+            continue;
+        }
+
+        const data = await response.json();
+        console.log('Respuesta de la API:', data); // Verifica la respuesta de la API
+
+        if (data.sprites && data.sprites.front_default) {
+            pokemonsEscapadosIMG.value.push(data.sprites.front_default);
+        } else {
+            console.warn(`No se encontró la imagen para el Pokémon ID: ${pokemonsEscapados[i]}`);
+        }
+    }
+
+    // Verifica que se hayan agregado las imágenes
+    console.log("Imágenes cargadas: ", pokemonsEscapadosIMG.value);
+    tirarGacha.value = true;
+
+    setTimeout(() => {
+        tirarGacha.value = false; // Esto se ejecutará después de 5 segundos
+    }, 10000);
+    verResultado.value = true;
+}
+
+
 
 async function getPokemonData(misPokemons) {
     const response = await fetch(
