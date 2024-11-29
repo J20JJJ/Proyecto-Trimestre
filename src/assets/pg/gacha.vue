@@ -1,52 +1,34 @@
 <template>
-  <div class="fondo_todo">
-    <!-- <sonidos /> -->
-    <div>
-      <!-- Confetti solo se muestra si showConfetti es verdadero -->
-      <div
-        v-confetti="{ particleCount: 200, force: 0.3 }"
-        v-if="showConfetti"
-      />
-      <div
-        class="confetti-container-arriba"
-        v-confetti="{ particleCount: 200, force: 0.3 }"
-        v-if="showConfetti"
-      />
-      <div
-        class="confetti-container-derecha"
-        v-confetti="{ particleCount: 200, force: 0.3 }"
-        v-if="showConfetti"
-      />
-    </div>
-    <router-link :to="'/'">
-      <boton_inicio button_text="HomePage" />
-    </router-link>
-
-    <router-link :to="{ name: 'mis-pokemons' }">
-      <boton_inicio button_text="mis pokemons" />
-    </router-link>
-    <div
-      style="
-        background-color: #ffcc00;
-        color: #ffffff;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 24px;
-        font-weight: bold;
-        text-align: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      "
-    >
-      <div ref="animatedDiv" class="default-text">{{ dinero }} Pokécoins</div>
+  <div class="container my-5">
+    <!-- Confetti effect, si es necesario -->
+    <div v-if="showConfetti">
+      <div v-confetti="{ particleCount: 200, force: 0.3 }"></div>
+      <div v-confetti="{ particleCount: 200, force: 0.3 }"></div>
+      <div v-confetti="{ particleCount: 200, force: 0.3 }"></div>
     </div>
 
-    <div class="pokemon-container">
-      <img
-        class="img_captura"
-        src="../img/pokeballCarga.gif"
-        v-if="!verResultado"
-      />
+    <!-- Enlaces con botones estilizados -->
+    <div class="d-flex justify-content-center mb-4">
+      <router-link :to="'/'" class="mx-2">
+        <boton_inicio button_text="HomePage" />
+      </router-link>
+      <router-link :to="{ name: 'mis-pokemons' }" class="mx-2">
+        <boton_inicio button_text="mis pokemons" />
+      </router-link>
+    </div>
 
+    <!-- Dinero con estilo -->
+    <div class="text-center mb-4">
+      <div ref="animatedDiv" class="h4">{{ dinero }} Pokécoins</div>
+    </div>
+
+    <!-- Imagen cargando -->
+    <div class="text-center mb-4" v-if="!verResultado">
+      <img src="../img/pokeballCarga1.gif" alt="Cargando..." class="img-fluid"/>
+    </div>
+
+    <!-- Carrusel de Pokémon -->
+    <div v-if="tirarGacha" class="mb-4">
       <Splide
         :options="{
           width: '100%',
@@ -61,52 +43,45 @@
           autoplay: true,
           interval: 200,
           drag: false,
-          pauseOnHover: false,
+          pauseOnHover: false
         }"
-        v-if="tirarGacha"
       >
         <SplideSlide v-for="i in pokemonsEscapadosIMG.length - 1" :key="i">
-          <img class="img_captura" :src="pokemonsEscapadosIMG[i]" alt="" />
+          <img :src="pokemonsEscapadosIMG[i]" alt="Pokémon" class="img-fluid" />
         </SplideSlide>
       </Splide>
+    </div>
 
-      <div class="fondogacha" v-if="!tirarGacha && verResultado">
-        <div class="pokemon-id" v-if="!tirarGacha && verResultado && verContenido">
-          <p>{{ pokemonID }}</p>
-        </div>
-
-        <img
-          :src="pokemonImg"
-          alt="Imagen del Pokémon"
-          class="pokemon-image"
-          v-if="!tirarGacha && verResultado && verContenido"
-        />
-
-        <div class="pokemon-details" v-if="!tirarGacha && verResultado && verContenido">
-          <p class="pokemon-name">{{ pokemonName }}</p>
-          <p class="capture-rate">
-            Probabilidad de captura: {{ capture_rate }}%
-          </p>
-        </div>
-        <button
+    <!-- Resultado de Pokémon -->
+    <div v-if="!tirarGacha && verResultado" class="text-center">
+      <div v-if="verContenido">
+        <p class="h5">{{ pokemonID }}</p>
+        <img :src="pokemonImg" alt="Imagen del Pokémon" class="img-fluid mb-3" />
+        <p class="h4">{{ pokemonName }}</p>
+        <p>Probabilidad de captura: {{ capture_rate }}%</p>
+      </div>
+      
+      <div class="mt-4">
+        <boton_GO
           @click="tirar"
-          class="throw-button"
           v-if="!tirarGacha && verResultado"
-        >
-          Tirar Pokébola
-        </button>
+          />
       </div>
     </div>
-    <!-- <fondo_animado></fondo_animado> -->
   </div>
 </template>
+
 
 <script setup>
 import { ref, onBeforeMount } from "vue";
 import boton_inicio from "@/components/elementos/boton_inicio.vue";
+import boton_GO from "@/components/elementos/boton_GO.vue";
 import axios from "axios";
 import { vConfetti } from "@neoconfetti/vue";
 import Cookies from "js-cookie";
+
+import 'bootstrap/dist/css/bootstrap.min.css'; // Importar Bootstrap solo en este componente
+
 
 const showConfetti = ref(false);
 
@@ -287,7 +262,7 @@ async function getPokemonEscapados(pokemonsEscapados, idWin) {
   setTimeout(() => {
     tirarGacha.value = false; // Esto se ejecutará después de 5 segundos
     actualizarCookies(idWin);
-  }, 10000);
+  }, (pokemonsEscapadosIMG.value.length)*500);
   verResultado.value = true;
   verContenido.value = true;
   
@@ -353,423 +328,3 @@ function animateText() {
   }
 }
 </script>
-
-<style scoped>
-.fondo_todo {
-  width: 100%;
-  height: 100vh;
-  background-image: url("/src/assets/img/portadas_gacha/Hoenn.jpg");
-  background-repeat: no-repeat;
-  background-size: cover; /* Esto asegura que la imagen cubra todo el contenedor */
-  background-position: center; /* Centra la imagen dentro del contenedor */
-  background-attachment: fixed;
-}
-
-.fondogacha {
-  width: 30%;
-  height: 45vh;
-  background-color: rgb(252, 241, 227);
-}
-
-.img_captura {
-  width: 45vh;
-  /* Ajusta el ancho */
-  height: auto;
-  /* Mantiene la proporción */
-  margin: 10px 0;
-  /* Margen superior e inferior */
-}
-
-.confetti-container-derecha {
-  position: fixed;
-  right: 0;
-  /* top: 50%; */
-  transform: translateY(-50%);
-}
-
-.confetti-container-arriba {
-  position: fixed;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-}
-
-@keyframes animacionTexto {
-  22% {
-    transform: scale(1);
-    color: black;
-  }
-
-  25% {
-    transform: scale(1.5);
-    color: red;
-  }
-
-  50% {
-    transform: scale(1.5);
-    color: red;
-  }
-
-  75% {
-    transform: scale(1.5);
-    color: red;
-    /* transform: scale(1.5) rotate(5deg); */
-  }
-
-  100% {
-    transform: scale(1);
-    color: black;
-  }
-}
-
-.animated-text {
-  font-size: 2rem;
-  animation: animacionTexto 1s ease-in-out;
-}
-
-.pokemon-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  font-family: "Arial", sans-serif;
-  padding: 20px;
-  background-image: url("/src/assets/img/portadas_gacha/Hoenn.jpg");
-  background-repeat: no-repeat;
-  background-size: cover; /* Esto asegura que la imagen cubra todo el contenedor */
-  background-position: center; /* Centra la imagen dentro del contenedor */
-  background-attachment: fixed; /* Esto hace que la imagen de fondo se quede fija mientras haces scroll */
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.pokemon-id {
-  font-size: 1.2em;
-  color: #333;
-  font-weight: bold;
-}
-
-.pokemon-image {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-.pokemon-details {
-  margin-top: 15px;
-}
-
-.pokemon-name {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #4caf50;
-}
-
-.capture-rate {
-  font-size: 1.1em;
-  color: #ff5722;
-}
-
-.throw-button {
-    /* position: absolute; */
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 1.1em;
-  background-color: #ffeb3b;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.throw-button:hover {
-  background-color: #ffc107;
-}
-</style>
-
-
-<template>
-    <div class="fondo_todo">
-      <!-- <sonidos /> -->
-      <div>
-        <!-- Confetti solo se muestra si showConfetti es verdadero -->
-        <div
-          v-confetti="{ particleCount: 200, force: 0.3 }"
-          v-if="showConfetti"
-        />
-        <div
-          class="confetti-container-arriba"
-          v-confetti="{ particleCount: 200, force: 0.3 }"
-          v-if="showConfetti"
-        />
-        <div
-          class="confetti-container-derecha"
-          v-confetti="{ particleCount: 200, force: 0.3 }"
-          v-if="showConfetti"
-        />
-      </div>
-      <router-link :to="'/'">
-        <boton_inicio button_text="HomePage" />
-      </router-link>
-  
-      <router-link :to="{ name: 'mis-pokemons' }">
-        <boton_inicio button_text="mis pokemons" />
-      </router-link>
-      <div class="poke-info">
-        <div ref="animatedDiv" class="default-text">{{ dinero }} Pokécoins</div>
-      </div>
-  
-      <div class="pokemon-container">
-        <img
-          class="img_captura"
-          src="../img/pokeballCarga.gif"
-          v-if="!verResultado"
-        />
-  
-        <Splide
-          :options="{
-            width: '100%',
-            perPage: 1,
-            gap: 1,
-            height: '100%',
-            type: 'loop',
-            pagination: false,
-            arrows: false,
-            speed: 800,
-            rewind: false,
-            autoplay: true,
-            interval: 200,
-            drag: false,
-            pauseOnHover: false,
-          }"
-          v-if="tirarGacha"
-        >
-          <SplideSlide v-for="i in pokemonsEscapadosIMG.length - 1" :key="i">
-            <img class="img_captura" :src="pokemonsEscapadosIMG[i]" alt="" />
-          </SplideSlide>
-        </Splide>
-  
-        <div class="fondogacha" v-if="!tirarGacha && verResultado">
-          <div class="pokemon-id" v-if="!tirarGacha && verResultado && verContenido">
-            <p>{{ pokemonID }}</p>
-          </div>
-  
-          <img
-            :src="pokemonImg"
-            alt="Imagen del Pokémon"
-            class="pokemon-image"
-            v-if="!tirarGacha && verResultado && verContenido"
-          />
-  
-          <div class="pokemon-details" v-if="!tirarGacha && verResultado && verContenido">
-            <p class="pokemon-name">{{ pokemonName }}</p>
-            <p class="capture-rate">
-              Probabilidad de captura: {{ capture_rate }}%
-            </p>
-          </div>
-          <button
-            @click="tirar"
-            class="throw-button"
-            v-if="!tirarGacha && verResultado"
-          >
-            Tirar Pokébola
-          </button>
-        </div>
-      </div>
-      <!-- <fondo_animado></fondo_animado> -->
-    </div>
-  </template>
-  
-  <style scoped>
-  .fondo_todo {
-    width: 100%;
-    height: 100vh;
-    background-image: url("/src/assets/img/portadas_gacha/Hoenn.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-  }
-  
-  .fondogacha {
-    width: 90%;
-    max-width: 600px;
-    height: auto;
-    margin: 0 auto;
-    background-color: rgb(252, 241, 227);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .img_captura {
-    width: 100%;
-    max-width: 200px;
-    height: auto;
-    margin: 10px auto;
-  }
-  
-  .confetti-container-derecha {
-    position: fixed;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  
-  .confetti-container-arriba {
-    position: fixed;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-  }
-  
-  .poke-info {
-    background-color: #ffcc00;
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin: 20px 0;
-  }
-  
-  @keyframes animacionTexto {
-    22% {
-      transform: scale(1);
-      color: black;
-    }
-  
-    25% {
-      transform: scale(1.5);
-      color: red;
-    }
-  
-    50% {
-      transform: scale(1.5);
-      color: red;
-    }
-  
-    75% {
-      transform: scale(1.5);
-      color: red;
-    }
-  
-    100% {
-      transform: scale(1);
-      color: black;
-    }
-  }
-  
-  .animated-text {
-    font-size: 2rem;
-    animation: animacionTexto 1s ease-in-out;
-  }
-  
-  .pokemon-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    font-family: "Arial", sans-serif;
-    padding: 20px;
-    background-image: url("/src/assets/img/portadas_gacha/Hoenn.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .pokemon-id {
-    font-size: 1.2em;
-    color: #333;
-    font-weight: bold;
-  }
-  
-  .pokemon-image {
-    width: 100%;
-    max-width: 150px;
-    height: auto;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-top: 10px;
-  }
-  
-  .pokemon-details {
-    margin-top: 15px;
-  }
-  
-  .pokemon-name {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #4caf50;
-  }
-  
-  .capture-rate {
-    font-size: 1.1em;
-    color: #ff5722;
-  }
-  
-  .throw-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 1.1em;
-    background-color: #ffeb3b;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .throw-button:hover {
-    background-color: #ffc107;
-  }
-  
-  @media (max-width: 768px) {
-    .fondogacha,
-    .pokemon-image {
-      width: 80%;
-      margin: auto;
-    }
-  
-    .poke-info {
-      font-size: 1.2rem;
-    }
-  
-    .img_captura {
-      max-width: 150px;
-    }
-  
-    .throw-button {
-      font-size: 1em;
-      padding: 8px 16px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .fondogacha,
-    .pokemon-image {
-      width: 100%;
-      margin: auto;
-    }
-  
-    .poke-info {
-      font-size: 1rem;
-    }
-  
-    .img_captura {
-      max-width: 120px;
-    }
-  
-    .throw-button {
-      font-size: 0.9em;
-      padding: 6px 12px;
-    }
-  }
-  </style>
-  
