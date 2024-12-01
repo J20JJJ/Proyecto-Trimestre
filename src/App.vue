@@ -5,14 +5,13 @@ import '@splidejs/vue-splide/css';
 </script>
 
 <template>
-  <header>
+  <header class="fondo">
     <titulo></titulo>
     <!-- <sonidos/> -->
     <transition name="bounce">
       
       <RouterView/>
     </transition>
-    
   </header>
 </template>
 

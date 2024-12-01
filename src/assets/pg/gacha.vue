@@ -1,71 +1,96 @@
 <template>
-  <div class="container my-5">
-    <!-- Confetti effect, si es necesario -->
-    <div v-if="showConfetti">
-      <div v-confetti="{ particleCount: 200, force: 0.3 }"></div>
-      <div v-confetti="{ particleCount: 200, force: 0.3 }"></div>
-      <div v-confetti="{ particleCount: 200, force: 0.3 }"></div>
-    </div>
+  <div class="fondo fondo_gacha">
 
-    <!-- Enlaces con botones estilizados -->
-    <div class="d-flex justify-content-center mb-4">
-      <router-link :to="'/'" class="mx-2">
-        <boton_inicio button_text="HomePage" />
-      </router-link>
-      <router-link :to="{ name: 'mis-pokemons' }" class="mx-2">
-        <boton_inicio button_text="mis pokemons" />
-      </router-link>
-    </div>
 
-    <!-- Dinero con estilo -->
-    <div class="text-center mb-4">
-      <div ref="animatedDiv" class="h4">{{ dinero }} Pokécoins</div>
-    </div>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Consigue Pokécoins
+</button>
 
-    <!-- Imagen cargando -->
-    <div class="text-center mb-4" v-if="!verResultado">
-      <img src="../img/pokeballCarga1.gif" alt="Cargando..." class="img-fluid"/>
-    </div>
-
-    <!-- Carrusel de Pokémon -->
-    <div v-if="tirarGacha" class="mb-4">
-      <Splide
-        :options="{
-          width: '100%',
-          perPage: 1,
-          gap: 1,
-          height: '100%',
-          type: 'loop',
-          pagination: false,
-          arrows: false,
-          speed: 800,
-          rewind: false,
-          autoplay: true,
-          interval: 200,
-          drag: false,
-          pauseOnHover: false
-        }"
-      >
-        <SplideSlide v-for="i in pokemonsEscapadosIMG.length - 1" :key="i">
-          <img :src="pokemonsEscapadosIMG[i]" alt="Pokémon" class="img-fluid" />
-        </SplideSlide>
-      </Splide>
-    </div>
-
-    <!-- Resultado de Pokémon -->
-    <div v-if="!tirarGacha && verResultado" class="text-center">
-      <div v-if="verContenido">
-        <p class="h5">{{ pokemonID }}</p>
-        <img :src="pokemonImg" alt="Imagen del Pokémon" class="img-fluid mb-3" />
-        <p class="h4">{{ pokemonName }}</p>
-        <p>Probabilidad de captura: {{ capture_rate }}%</p>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #f65a52;">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" v-on:click="actualizarCookies(-1)"></button>
       </div>
-      
-      <div class="mt-4">
-        <boton_GO
-          @click="tirar"
-          v-if="!tirarGacha && verResultado"
-          />
+      <div class="modal-body">
+        <whosthatPokemon/>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+    <div class="container my-5">
+      <!-- Confetti effect, si es necesario -->
+      <div v-if="showConfetti">
+        <div v-confetti="{ particleCount: 200, force: 0.3 }" class="confetti-container-arriba"></div>
+      </div>
+  
+      <!-- Enlaces con botones estilizados -->
+      <div class="d-flex justify-content-center mb-4">
+        <router-link :to="'/'" class="mx-2">
+          <boton_inicio button_text="HomePage" />
+        </router-link>
+        <router-link :to="{ name: 'mis-pokemons' }" class="mx-2">
+          <boton_inicio button_text="mis pokemons" />
+        </router-link>
+      </div>
+  
+      <!-- Dinero con estilo -->
+      <div class="text-center mb-4">
+        <div ref="animatedDiv" class="h4">{{ dinero }} Pokécoins</div>
+      </div>
+  
+      <!-- Imagen cargando -->
+      <div class="text-center mb-4" v-if="!verResultado">
+        <img src="../img/pokeballCarga1.gif" alt="Cargando..." class="img-fluid"/>
+      </div>
+  
+      <!-- Carrusel de Pokémon -->
+      <div v-if="tirarGacha" class="mb-4">
+        <Splide
+          :options="{
+            width: '100%',
+            perPage: 1,
+            gap: 1,
+            height: '100%',
+            type: 'loop',
+            pagination: false,
+            arrows: false,
+            speed: 800,
+            rewind: false,
+            autoplay: true,
+            interval: 200,
+            drag: false,
+            pauseOnHover: false
+          }"
+        >
+          <SplideSlide v-for="i in pokemonsEscapadosIMG.length - 1" :key="i">
+            <img :src="pokemonsEscapadosIMG[i]" alt="Pokémon" class="img-fluid" />
+          </SplideSlide>
+        </Splide>
+      </div>
+  
+      <!-- Resultado de Pokémon -->
+      <div v-if="!tirarGacha && verResultado" class="text-center">
+        <div v-if="verContenido">
+          <p class="h5">{{ pokemonID }}</p>
+          <img :src="pokemonImg" alt="Imagen del Pokémon" class="img-fluid mb-3" />
+          <p class="h4">{{ pokemonName }}</p>
+          <p>Probabilidad de captura: {{ capture_rate }}%</p>
+        </div>
+        
+        <div class="mt-4">
+          <boton_GO
+            @click="tirar"
+            v-if="!tirarGacha && verResultado"
+            />
+        </div>
       </div>
     </div>
   </div>
@@ -79,8 +104,12 @@ import boton_GO from "@/components/elementos/boton_GO.vue";
 import axios from "axios";
 import { vConfetti } from "@neoconfetti/vue";
 import Cookies from "js-cookie";
+import whosthatPokemon from "@/components/elementos/whosthatPokemon.vue";
 
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importar Bootstrap solo en este componente
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
+
 
 
 const showConfetti = ref(false);
@@ -91,7 +120,7 @@ const verResultado = ref(true);
 
 const verContenido = ref(false);
 
-let dinero = 200;
+let dinero = Cookies.get("dinero") ? parseInt(Cookies.get("dinero"), 10) : 200;
 
 let pokemonImg = ref([]);
 let pokemonName = ref([]);
@@ -103,22 +132,31 @@ let misPokemons = ref([]);
 let pokemonsEscapadosIMG = ref([]);
 
 const actualizarCookies = (idWin) => {
-  const savedPokemons = Cookies.get("misPokemons");
-  if (savedPokemons) {
-    misPokemons.value = JSON.parse(savedPokemons);
-    misPokemons.value.push(idWin);
-
-    if (misPokemons.value.includes(idWin)) {
-      dinero += 20;
+  if(idWin !== -1){
+    const savedPokemons = Cookies.get("misPokemons");
+    if (savedPokemons) {
+      misPokemons.value = JSON.parse(savedPokemons);
+      misPokemons.value.push(idWin);
+  
+      if (misPokemons.value.includes(idWin)) {
+        dinero += 20;
+      }
+    } else {
+      misPokemons.value.push(idWin);
     }
-  } else {
-    misPokemons.value.push(idWin);
+
+  }else{
+    let dinero1 = parseInt(Cookies.get("dinero"), 10);
+    dinero = dinero1;
   }
 
   misPokemons.value = [...new Set(misPokemons.value)].sort((a, b) => a - b);
   Cookies.set("misPokemons", JSON.stringify(misPokemons.value), {
     expires: 36500,
   });
+
+  Cookies.set("dinero", dinero, { expires: 36500 });
+
   console.log("Cookies actualizadas");
 };
 
@@ -206,7 +244,6 @@ async function tirarRuleta() {
         // Si el número aleatorio es menor que el porcentaje, se gana
         if (win < porcentaje) {
           console.log("GANAS!!!");
-          showConfetti.value = true;
           pokemonsEscapados.push(index);
 
           getPokemonEscapados(pokemonsEscapados, index);
@@ -260,12 +297,12 @@ async function getPokemonEscapados(pokemonsEscapados, idWin) {
   tirarGacha.value = true;
 
   setTimeout(() => {
-    tirarGacha.value = false; // Esto se ejecutará después de 5 segundos
+    tirarGacha.value = false;
+    showConfetti.value = true;
     actualizarCookies(idWin);
   }, (pokemonsEscapadosIMG.value.length)*500);
   verResultado.value = true;
-  verContenido.value = true;
-  
+  verContenido.value = true;  
 }
 
 async function getPokemonData(misPokemons) {
@@ -328,3 +365,26 @@ function animateText() {
   }
 }
 </script>
+
+<style>
+.fondo_gacha{
+  height: 82vh;
+  background: linear-gradient(135deg, #00bcd4, #2196f3, #003366); 
+}
+
+.confetti-container-arriba { 
+    position: fixed; 
+    left: 50%; 
+    top: 0;
+    transform: translateX(-50%);
+    z-index: 9999;
+}
+
+.confetti-container-derecha { 
+    /* position: fixed;  
+    left: 100%;  
+    top: 50%;
+    transform: translateY(50%);  */
+    /* z-index: 9999; */
+}
+</style>
