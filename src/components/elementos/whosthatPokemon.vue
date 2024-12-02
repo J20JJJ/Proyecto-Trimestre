@@ -163,7 +163,7 @@ const checkAnswer = (selectedOption) => {
     bgColor.value = "#1db12a";
     let dinero = Cookies.get("dinero");
     dinero = parseInt(dinero, 10);
-
+    console.log("dinero0: ", dinero);
     if (dinero) {
       console.log("dinero1: ", dinero);
       dinero += 10;
