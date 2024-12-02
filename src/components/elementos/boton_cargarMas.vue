@@ -1,6 +1,11 @@
 <style scoped>
+.container1 {
+    display: flex;
+    justify-content: center;
+  }
+
   .button_cargar_mas {
-    width: 110px;
+    width: 140px;
     height: 40px;
     display: flex;
     align-items: center;
@@ -52,8 +57,10 @@
 </style>
 
 <template>
-  <button class="button_cargar_mas">
-    <img class="svgIcon" src="/src/assets/img/pokeball-pokemon-svgrepo-com (1).svg" alt="">
-    Explore
-  </button>
+  <div class="container1">
+    <button class="button_cargar_mas">
+      <img class="svgIcon" src="/src/assets/img/pokeball-pokemon-svgrepo-com (1).svg" alt="">
+      Cargar más
+    </button>
+  </div>
 </template>

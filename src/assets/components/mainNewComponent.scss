@@ -1,4 +1,4 @@
-.pokemon_bloquedao{
+.pokemon_bloquedao {
     // filter: grayscale(100%) brightness(0.1);
     filter: grayscale(80%) brightness(0.7);
 }
@@ -8,46 +8,50 @@
     color: white;
     text-align: center;
     font-family: Arial, sans-serif;
-    
-    .sticky-button {
-        margin-left: 2%;
+
+    #sticky-button {
         position: sticky;
-        top: 20px; 
+        top: 20px;
         z-index: 10;
-        margin-bottom: 10px;
+
+        #sticky-boton {
+            margin-left: 2%;
+            margin-bottom: 10px;
+        }
     }
 
     h1 {
         color: yellow;
     }
-    
+
     .caja_pokemon {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         margin-top: 20px;
 
-        .pokemon{
+        .pokemon {
             // fondo caja
             background-color: rgb(101, 90, 255);
-            
+
             border: 1px solid black;
-            margin: 10px; 
+            margin: 10px;
             text-align: center;
 
-            img{
+            img {
                 background-color: white;
-                width: 100px; height: 100px;
+                width: 100px;
+                height: 100px;
             }
 
-            p{
+            p {
                 color: white;
             }
         }
 
-        .pokemon:hover{
-            transform: scale(1.05); /* Agrega un pequeño efecto de aumento cuando pasa el ratón */
+        .pokemon:hover {
+            transform: scale(1.05);
+            /* Agrega un pequeño efecto de aumento cuando pasa el ratón */
         }
     }
 }
-

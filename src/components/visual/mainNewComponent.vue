@@ -1,22 +1,25 @@
 <template>
-    <div class="fondo">
-
-        <router-link :to="'/'" v-if="!bool_HomePage">
-            <boton_inicio button_text="HomePage" class="sticky-button" />
-        </router-link>
-
-        <router-link :to="{ name: 'gacha' }" v-if="!bool_gacha">
-            <boton_inicio button_text="gacha" class="sticky-button" />
-        </router-link>
-
-        <router-link :to="{ name: 'mis-pokemons' }" v-if="!bool_mis_pokemons">
-            <boton_inicio button_text="mis pokemons" class="sticky-button" />
-        </router-link>
-
+    <div class="fondo fondo_main">
+        <div id="sticky-button" >
+            <router-link :to="'/'" v-if="!bool_HomePage" v-on:click="guardarPosicion">
+                <boton_inicio button_text="HomePage" id="sticky-boton" />
+            </router-link>
+    
+            <router-link :to="{ name: 'gacha' }" v-if="!bool_gacha" v-on:click="guardarPosicion">
+                <boton_inicio button_text="gacha" id="sticky-boton" />
+            </router-link>
+    
+            <router-link :to="{ name: 'mis-pokemons' }" v-if="!bool_mis_pokemons" v-on:click="guardarPosicion">
+                <boton_inicio button_text="mis pokemons" id="sticky-boton" />
+            </router-link>
+            <volver_arriba v-on:click="volverArriba()"/>
+        </div>
+        
         <div class="caja_pokemon">
             <div v-for="(pokemon, index) in pokemonImg" :key="pokemonID[index]" class="pokemon"
                 :class="getClase(pokemonID[index])" @click="$emit('toggle', pokemonID[index])">
-                <router-link :to="{ name: 'pokedex', params: { id: `${props.componente_actual}-${pokemonID[index]}` } }">
+                <router-link :to="{ name: 'pokedex', params: { id: `${props.componente_actual}-${pokemonID[index]}` } }"
+                    v-on:click="guardarPosicion">
                     <img :src="pokemon" :alt="pokemonName[index]">
                     <p>{{ pokemonName[index] }}</p>
                     <p>{{ pokemonID[index] }}</p>
@@ -29,8 +32,9 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
 import boton_inicio from '../elementos/boton_inicio.vue';
+import volver_arriba from '../elementos/volver_arriba.vue';
 
 const bool_HomePage = ref(false);
 const bool_gacha = ref(false);
@@ -87,10 +91,50 @@ function getClase(pokemon) {
     }
 };
 
+const scrollPosicion = ref(0);
+
+const guardarPosicion = () => {
+    scrollPosicion.value = window.scrollY; // Guardamos la posición actual del scroll
+    localStorage.setItem('posicionScroll', scrollPosicion.value); // Guardamos la posición en localStorage
+    console.log('Posición guardada:', scrollPosicion.value);
+};
+
+const cargarPosicion = () => {
+
+    setTimeout(() => {
+        const posicionGuardada = localStorage.getItem('posicionScroll');
+        if (posicionGuardada) {
+            scrollPosicion.value = parseInt(posicionGuardada); // Recuperamos la posición del scroll desde localStorage
+            window.scrollTo(0, scrollPosicion.value); // Desplazamos la página a la posición guardada
+            console.log('Posición cargada:', scrollPosicion.value);
+        } else {
+            console.log('No hay posición guardada');
+        }
+    }, 2000);
+
+};
+
+const manejarScroll = () => {
+    guardarPosicion(); // Llamamos a guardarPosicion cada vez que el usuario hace scroll
+};
+
+onMounted(() => {
+    cargarPosicion(); // Cargar la posición guardada en el localStorage cuando se monte el componente
+    window.addEventListener('scroll', manejarScroll);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', manejarScroll); // Eliminar el evento cuando el componente se destruya
+});
+
+const volverArriba = () =>{
+    window.scrollTo(0, 0);
+};
 </script>
 
 <style scoped>
-.sticky-button {
-    position: sticky;
+.fondo_main {
+  height: 82vh;
+  background: linear-gradient(135deg, #00bcd4, #2196f3, #003366);
 }
 </style>

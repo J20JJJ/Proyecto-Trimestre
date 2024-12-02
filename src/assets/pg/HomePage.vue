@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, onMounted, onBeforeUnmount, watch  } from "vue";
 import mainNewComponent from "@/components/visual/mainNewComponent.vue";
 import boton_cargarMas from "@/components/elementos/boton_cargarMas.vue";
 import Cookies from "js-cookie";

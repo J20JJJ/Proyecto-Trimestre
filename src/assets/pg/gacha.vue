@@ -21,74 +21,76 @@
       </div>
     </div>
 
+    <div class="container my-5 alola-container">
+
+  <!-- Contenido del contenedor -->
+  <div v-if="showConfetti">
+    <div v-confetti="{ particleCount: 200, force: 0.3 }" class="confetti-container-arriba"></div>
+  </div>
+
+  <div class="d-flex justify-content-center mb-4">
+    <router-link :to="'/'" class="mx-2">
+      <boton_inicio button_text="HomePage" />
+    </router-link>
+    <router-link :to="{ name: 'mis-pokemons' }" class="mx-2">
+      <boton_inicio button_text="mis pokemons" />
+    </router-link>
+  </div>
+
+  <div class="text-center mb-4">
+  <div ref="animatedDiv" class="h2 fw-bold text-uppercase text-primary text-shadow">
+    {{ dinero }} Pokécoins
+  </div>
+</div>
 
 
 
+  <div class="text-center mb-4" v-if="!verResultado">
+    <img src="../img/pokeballCarga1.gif" alt="Cargando..." class="img-fluid" />
+  </div>
 
+  <div v-if="tirarGacha" class="mb-4">
+    <Splide :options="{
+      width: '100%',
+      perPage: 1,
+      gap: 1,
+      height: '100%',
+      type: 'loop',
+      pagination: false,
+      arrows: false,
+      speed: 800,
+      rewind: false,
+      autoplay: true,
+      interval: 200,
+      drag: false,
+      pauseOnHover: false
+    }">
+      <SplideSlide v-for="i in pokemonsEscapadosIMG.length - 1" :key="i">
+        <img :src="pokemonsEscapadosIMG[i]" alt="Pokémon" class="img-fluid" />
+      </SplideSlide>
+    </Splide>
+  </div>
 
-    <div class="container my-5">
-      <!-- Confetti effect, si es necesario -->
-      <div v-if="true">
-        <div v-confetti="{ particleCount: 200, force: 0.3 }" class="confetti-container-arriba"></div>
-      </div>
-
-      <!-- Enlaces con botones estilizados -->
-      <div class="d-flex justify-content-center mb-4">
-        <router-link :to="'/'" class="mx-2">
-          <boton_inicio button_text="HomePage" />
-        </router-link>
-        <router-link :to="{ name: 'mis-pokemons' }" class="mx-2">
-          <boton_inicio button_text="mis pokemons" />
-        </router-link>
-      </div>
-
-      <!-- Dinero con estilo -->
-      <div class="text-center mb-4">
-        <div ref="animatedDiv" class="h4">{{ dinero }} Pokécoins</div>
-      </div>
-
-      <!-- Imagen cargando -->
-      <div class="text-center mb-4" v-if="!verResultado">
-        <img src="../img/pokeballCarga1.gif" alt="Cargando..." class="img-fluid" />
-      </div>
-
-      <!-- Carrusel de Pokémon -->
-      <div v-if="tirarGacha" class="mb-4">
-        <Splide :options="{
-          width: '100%',
-          perPage: 1,
-          gap: 1,
-          height: '100%',
-          type: 'loop',
-          pagination: false,
-          arrows: false,
-          speed: 800,
-          rewind: false,
-          autoplay: true,
-          interval: 200,
-          drag: false,
-          pauseOnHover: false
-        }">
-          <SplideSlide v-for="i in pokemonsEscapadosIMG.length - 1" :key="i">
-            <img :src="pokemonsEscapadosIMG[i]" alt="Pokémon" class="img-fluid" />
-          </SplideSlide>
-        </Splide>
-      </div>
-
-      <!-- Resultado de Pokémon -->
-      <div v-if="!tirarGacha && verResultado" class="text-center">
-        <div v-if="verContenido">
-          <p class="h5">{{ pokemonID }}</p>
-          <img :src="pokemonImg" alt="Imagen del Pokémon" class="img-fluid mb-3" />
-          <p class="h4">{{ pokemonName }}</p>
-          <p>Probabilidad de captura: {{ capture_rate }}%</p>
-        </div>
-
-        <div class="mt-4">
-          <boton_GO @click="tirar" v-if="!tirarGacha && verResultado" />
-        </div>
-      </div>
+  <div v-if="!tirarGacha && verResultado" class="text-center">
+    <div v-if="verContenido">
+      <p class="h4 fw-bold text-uppercase text-primary text-shadow">{{ pokemonID }}</p>
+      <img :src="pokemonImg" alt="Imagen del Pokémon" class="img-fluid mb-3" />
+      <p class="h4 fw-bold text-uppercase text-primary text-shadow">{{ pokemonName }}</p>
+      <p class="h6 fw-bold text-uppercase text-primary text-shadow">Probabilidad de captura: {{ capture_rate }}%</p>
     </div>
+
+    <div class="mt-4">
+      <boton_GO @click="tirar" v-if="!tirarGacha && verResultado" />
+    </div>
+    
+  <!-- Texto superpuesto al fondo -->
+  <div class="overlay-text">
+    Probabilidad de Alola incrementada
+  </div>
+
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -394,11 +396,30 @@ onUnmounted(() => {
   z-index: 9999;
 }
 
-.confetti-container-derecha {
-  /* position: fixed;  
-    left: 100%;  
-    top: 50%;
-    transform: translateY(50%);  */
-  /* z-index: 9999; */
+.alola-container {
+  position: relative; /* Necesario para que el texto se superponga */
+  background-image: url('../img/portadas_gacha/Alola.jpg'); /* Ruta de tu imagen */
+  background-size: cover; /* Ajusta la imagen para cubrir el contenedor */
+  background-position: center; /* Centra la imagen */
+  color: white; /* Asegúrate de que el texto sea visible */
+  padding: 20px; /* Espaciado interno */
+  border-radius: 10px; /* Esquinas redondeadas, opcional */
 }
+
+.overlay-text {
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+  color: white;
+  padding: 10px 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 5px;
+  display: inline-block; /* Ajuste al tamaño del contenido */
+  margin-top: 15px; /* Espaciado desde el botón */
+  text-align: center;
+}
+
+.text-shadow {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra suave en el texto */
+}
+
 </style>
