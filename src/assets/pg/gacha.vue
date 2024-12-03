@@ -107,8 +107,7 @@ import whosthatPokemon from "@/components/elementos/whosthatPokemon.vue";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importar Bootstrap solo en este componente
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-
-
+const regiones = ref(['NULL','Alola','Galar','Hoenn','Johto','Kalos','Kanto','Sinnoh','Unova']);
 
 const showConfetti = ref(false);
 
@@ -158,7 +157,21 @@ const actualizarCookies = (idWin) => {
   console.log("Cookies actualizadas");
 };
 
-function buscarLocalizaciones(pokemonId, regionBuscada) {
+function buscarLocalizaciones(pokemonId) {
+
+  let regionBuscada = "NULL";
+
+  const eventos = Cookies.get("eventos");
+  if(eventos){
+    regionBuscada = eventos;
+  }else{
+    const eventos_random = Math.floor(Math.random() * regiones.value.length);
+    const fin_evento_random = Math.floor(Math.random() * (31 - 15 + 1) + 15);
+    Cookies.set("eventos", regiones.value[eventos_random], { expires: fin_evento_random });
+  }
+
+  
+
   return new Promise((resolve, reject) => {
     // Validamos que el Pokémon ID o nombre no esté vacío
     if (!pokemonId) {
@@ -203,15 +216,13 @@ async function tirarRuleta() {
   let porcentaje;
   let esDeLaRegion = false;
 
-  let regionBuscada = "alola";
-
   while (true) {
     index = Math.floor(Math.random() * 1025);
     console.log("index: ", index);
 
     try {
       // Esperamos la respuesta de buscarLocalizaciones
-      const localizaciones = await buscarLocalizaciones(index, regionBuscada);
+      const localizaciones = await buscarLocalizaciones(index);
 
       // Comprobamos si tiene alguna localización 'alola'
       if (localizaciones.length > 0) {
