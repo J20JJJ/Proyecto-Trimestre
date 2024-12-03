@@ -11,6 +11,9 @@
       />
     </div>
 
+<!-- Botón de cargar más -->
+    <boton_cargarMas @click="cargarMasPokemons" v-if="botonDEcargarMas" id="sticky-button" class="cargar_mas_btn"/>
+
     <!-- Componente principal -->
     <mainNewComponent
       :pokemonImg="pokemonsFiltradosImg"
@@ -20,8 +23,6 @@
       :misPokemons="misPokemons"
     />
 
-    <!-- Botón de cargar más -->
-    <boton_cargarMas @click="cargarMasPokemons" v-if="botonDEcargarMas" />
   </div>
 </template>
 
@@ -150,6 +151,11 @@ filtrarPokemons();
 .search-input::placeholder {
   color: #aaa;
   font-style: italic;
+}
+
+.cargar_mas_btn{
+  transform: translateX(-30%) translateY(90%);
+  z-index: 11;
 }
 
 </style>

@@ -12,7 +12,7 @@
             <router-link :to="{ name: 'mis-pokemons' }" v-if="!bool_mis_pokemons" v-on:click="guardarPosicion">
                 <boton_inicio button_text="mis pokemons" id="sticky-boton" />
             </router-link>
-            <volver_arriba v-on:click="volverArriba()"/>
+            <volver_arriba v-on:click="volverArriba()" v-if="scrollPosicion > 400"/>
         </div>
         
         <div class="caja_pokemon">
@@ -134,7 +134,7 @@ const volverArriba = () =>{
 
 <style scoped>
 .fondo_main {
-  height: 82vh;
+  /* height: 82vh; */
   background: linear-gradient(135deg, #00bcd4, #2196f3, #003366);
 }
 </style>

@@ -2,6 +2,16 @@
   <div class="fondo fondo_gacha">
 
 
+    
+    <div class="d-flex justify-content-center mb-4 py-2">
+      <router-link :to="'/'" class="mx-2">
+        <boton_inicio button_text="HomePage" />
+      </router-link>
+      <router-link :to="{ name: 'mis-pokemons' }" class="mx-2">
+        <boton_inicio button_text="mis pokemons" />
+      </router-link>
+    </div>
+
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
       Consigue Pokécoins
@@ -20,76 +30,71 @@
         </div>
       </div>
     </div>
+      
+    <div class="container my-3 alola-container" :class="verRegion()">
 
-    <div class="container my-5 alola-container">
+      <!-- Contenido del contenedor -->
+      <div v-if="showConfetti">
+        <div v-confetti="{ particleCount: 200, force: 0.3 }" class="confetti-container-arriba"></div>
+      </div>
 
-  <!-- Contenido del contenedor -->
-  <div v-if="showConfetti">
-    <div v-confetti="{ particleCount: 200, force: 0.3 }" class="confetti-container-arriba"></div>
-  </div>
+      <div class="d-flex justify-content-center mb-4">
 
-  <div class="d-flex justify-content-center mb-4">
-    <router-link :to="'/'" class="mx-2">
-      <boton_inicio button_text="HomePage" />
-    </router-link>
-    <router-link :to="{ name: 'mis-pokemons' }" class="mx-2">
-      <boton_inicio button_text="mis pokemons" />
-    </router-link>
-  </div>
+      </div>
 
-  <div class="text-center mb-4">
-  <div ref="animatedDiv" class="h2 fw-bold text-uppercase text-primary text-shadow">
-    {{ dinero }} Pokécoins
-  </div>
-</div>
+      <div class="text-center mb-4">
+        <div ref="animatedDiv" class="h2 fw-bold text-uppercase text-primary text-shadow">
+          {{ dinero }} Pokécoins
+        </div>
+      </div>
 
 
 
-  <div class="text-center mb-4" v-if="!verResultado">
-    <img src="../img/pokeballCarga1.gif" alt="Cargando..." class="img-fluid" />
-  </div>
+      <div class="text-center mb-4" v-if="!verResultado">
+        <img src="../img/pokeballCarga1.gif" alt="Cargando..." class="img-fluid" />
+      </div>
 
-  <div v-if="tirarGacha" class="mb-4">
-    <Splide :options="{
-      width: '100%',
-      perPage: 1,
-      gap: 1,
-      height: '100%',
-      type: 'loop',
-      pagination: false,
-      arrows: false,
-      speed: 800,
-      rewind: false,
-      autoplay: true,
-      interval: 200,
-      drag: false,
-      pauseOnHover: false
-    }">
-      <SplideSlide v-for="i in pokemonsEscapadosIMG.length - 1" :key="i">
-        <img :src="pokemonsEscapadosIMG[i]" alt="Pokémon" class="img-fluid" />
-      </SplideSlide>
-    </Splide>
-  </div>
+      <div v-if="tirarGacha" class="mb-4">
+        <Splide :options="{
+          width: '100%',
+          perPage: 1,
+          gap: 1,
+          height: '100%',
+          type: 'loop',
+          pagination: false,
+          arrows: false,
+          speed: 800,
+          rewind: false,
+          autoplay: true,
+          interval: 200,
+          drag: false,
+          pauseOnHover: false
+        }">
+          <SplideSlide v-for="i in pokemonsEscapadosIMG.length - 1" :key="i">
+            <img :src="pokemonsEscapadosIMG[i]" alt="Pokémon" class="img-fluid" />
+          </SplideSlide>
+        </Splide>
+      </div>
 
-  <div v-if="!tirarGacha && verResultado" class="text-center">
-    <div v-if="verContenido">
-      <p class="h4 fw-bold text-uppercase text-primary text-shadow">{{ pokemonID }}</p>
-      <img :src="pokemonImg" alt="Imagen del Pokémon" class="img-fluid mb-3" />
-      <p class="h4 fw-bold text-uppercase text-primary text-shadow">{{ pokemonName }}</p>
-      <p class="h6 fw-bold text-uppercase text-primary text-shadow">Probabilidad de captura: {{ capture_rate }}%</p>
+      <div v-if="!tirarGacha && verResultado" class="text-center">
+        <div v-if="verContenido">
+          <p class="h4 fw-bold text-uppercase text-primary text-shadow">{{ pokemonID }}</p>
+          <img :src="pokemonImg" alt="Imagen del Pokémon" class="img-fluid mb-3" />
+          <p class="h4 fw-bold text-uppercase text-primary text-shadow">{{ pokemonName }}</p>
+          <p class="h6 fw-bold text-uppercase text-primary text-shadow">Probabilidad de captura: {{ capture_rate }}%</p>
+        </div>
+
+        <div class="mt-4">
+          <boton_GO @click="tirar" v-if="!tirarGacha && verResultado" />
+        </div>
+
+        <!-- Texto superpuesto al fondo -->
+        <div class="overlay-text" v-if="regiones[regionesNUM] !== 'NULL' && regionesNUM < regiones.length && regionesNUM >= 1">
+          Probabilidad de {{ regiones[regionesNUM] }} incrementada
+        </div>
+
+      </div>
     </div>
-
-    <div class="mt-4">
-      <boton_GO @click="tirar" v-if="!tirarGacha && verResultado" />
-    </div>
-    
-  <!-- Texto superpuesto al fondo -->
-  <div class="overlay-text">
-    Probabilidad de Alola incrementada
-  </div>
-
-  </div>
-</div>
 
   </div>
 </template>
@@ -107,7 +112,8 @@ import whosthatPokemon from "@/components/elementos/whosthatPokemon.vue";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importar Bootstrap solo en este componente
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-const regiones = ref(['NULL','Alola','Galar','Hoenn','Johto','Kalos','Kanto','Sinnoh','Unova']);
+const regiones = ref(['NULL', 'Alola', 'Galar', 'Hoenn', 'Johto', 'Kalos', 'Kanto', 'Sinnoh', 'Unova']);
+const regionesNUM = ref(0);
 
 const showConfetti = ref(false);
 
@@ -157,20 +163,9 @@ const actualizarCookies = (idWin) => {
   console.log("Cookies actualizadas");
 };
 
-function buscarLocalizaciones(pokemonId) {
+function buscarLocalizaciones(pokemonId, regionBuscada) {
 
-  let regionBuscada = "NULL";
-
-  const eventos = Cookies.get("eventos");
-  if(eventos){
-    regionBuscada = eventos;
-  }else{
-    const eventos_random = Math.floor(Math.random() * regiones.value.length);
-    const fin_evento_random = Math.floor(Math.random() * (31 - 15 + 1) + 15);
-    Cookies.set("eventos", regiones.value[eventos_random], { expires: fin_evento_random });
-  }
-
-  
+  regionBuscada = regionBuscada.toLowerCase();
 
   return new Promise((resolve, reject) => {
     // Validamos que el Pokémon ID o nombre no esté vacío
@@ -216,22 +211,29 @@ async function tirarRuleta() {
   let porcentaje;
   let esDeLaRegion = false;
 
+  let regionEVENTO = regiones.value[regionesNUM.value];
+  console.log("gato génesis de CryptoKitties", regionEVENTO)
+
   while (true) {
     index = Math.floor(Math.random() * 1025);
     console.log("index: ", index);
 
     try {
-      // Esperamos la respuesta de buscarLocalizaciones
-      const localizaciones = await buscarLocalizaciones(index);
-
-      // Comprobamos si tiene alguna localización 'alola'
-      if (localizaciones.length > 0) {
-        console.log("ALOLA");
+      if(regionEVENTO !== 'NULL'){
+        // Esperamos la respuesta de buscarLocalizaciones
+        const localizaciones = await buscarLocalizaciones(index, regionEVENTO);
+  
+        // Comprobamos si tiene alguna localización 'alola'
+        if (localizaciones.length > 0) {
+          console.log("ALOLA");
+          esDeLaRegion = true;
+        } else {
+          console.log("No ALOLA");
+          esDeLaRegion = false;
+          pokemonsEscapados.push(index);
+        }
+      }else{
         esDeLaRegion = true;
-      } else {
-        console.log("No ALOLA");
-        esDeLaRegion = false;
-        pokemonsEscapados.push(index);
       }
 
       // Si es de la región, realizamos el cálculo del porcentaje
@@ -391,9 +393,60 @@ onUnmounted(() => {
   modalElement?.removeEventListener('hidden.bs.modal', handleModalClose);
 });
 
+function verRegion() {
+  const eventos = Cookies.get("eventos");
+  if (eventos) {
+    regionesNUM.value = parseInt(Cookies.get("eventos"), 10);
+    console.log(`si hay cookie`)
+  } else {
+    const eventos_random = Math.floor(Math.random() * regiones.value.length);
+    regionesNUM.value = eventos_random;
+    const fin_evento_random = Math.floor(Math.random() * (31 - 15 + 1) + 15);
+    // let treinta_segundos = (((1/24)/60)/60)/2;
+    Cookies.set("eventos", eventos_random, { expires: fin_evento_random });
+    console.log(`no hay cookie`)
+  }
+
+  console.log(`img-${regiones.value[regionesNUM.value]}`)
+
+  return `img-${regiones.value[regionesNUM.value]}`
+
+}
 </script>
 
 <style>
+.img-Alola {
+  background-image: url('../img/portadas_gacha/Alola.jpg');
+}
+
+.img-Galar {
+  background-image: url('../img/portadas_gacha/Galar.jpg');
+}
+
+.img-Hoenn {
+  background-image: url('../img/portadas_gacha/Hoenn.jpg');
+}
+
+.img-Johto {
+  background-image: url('../img/portadas_gacha/Johto.jpg');
+}
+
+.img-Kalos {
+  background-image: url('../img/portadas_gacha/Kalos.jpg');
+}
+
+.img-Kanto {
+  background-image: url('../img/portadas_gacha/Kanto.jpg');
+}
+
+.img-Sinnoh {
+  background-image: url('../img/portadas_gacha/Sinnoh.jpg');
+}
+
+.img-Unova {
+  background-image: url('../img/portadas_gacha/Unova.jpg');
+}
+
 .fondo_gacha {
   height: 82vh;
   background: linear-gradient(135deg, #00bcd4, #2196f3, #003366);
@@ -408,29 +461,38 @@ onUnmounted(() => {
 }
 
 .alola-container {
-  position: relative; /* Necesario para que el texto se superponga */
-  background-image: url('../img/portadas_gacha/Alola.jpg'); /* Ruta de tu imagen */
-  background-size: cover; /* Ajusta la imagen para cubrir el contenedor */
-  background-position: center; /* Centra la imagen */
-  color: white; /* Asegúrate de que el texto sea visible */
-  padding: 20px; /* Espaciado interno */
-  border-radius: 10px; /* Esquinas redondeadas, opcional */
+  position: relative;
+  /* Necesario para que el texto se superponga */
+  /* Ruta de tu imagen */
+  background-size: cover;
+  /* Ajusta la imagen para cubrir el contenedor */
+  background-position: center;
+  /* Centra la imagen */
+  color: white;
+  /* Asegúrate de que el texto sea visible */
+  padding: 20px;
+  /* Espaciado interno */
+  border-radius: 10px;
+  /* Esquinas redondeadas, opcional */
 }
 
 .overlay-text {
-  background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Fondo semitransparente */
   color: white;
   padding: 10px 20px;
   font-size: 1.5rem;
   font-weight: bold;
   border-radius: 5px;
-  display: inline-block; /* Ajuste al tamaño del contenido */
-  margin-top: 15px; /* Espaciado desde el botón */
+  display: inline-block;
+  /* Ajuste al tamaño del contenido */
+  margin-top: 15px;
+  /* Espaciado desde el botón */
   text-align: center;
 }
 
 .text-shadow {
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra suave en el texto */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  /* Sombra suave en el texto */
 }
-
 </style>
