@@ -1,5 +1,6 @@
 <template>
-    <div class="fondo fondo_main">
+    <div class="fondo_main">
+        
         <div id="sticky-button" >
             <router-link :to="'/'" v-if="!bool_HomePage" v-on:click="guardarPosicion">
                 <boton_inicio button_text="HomePage" id="sticky-boton" />
@@ -10,11 +11,12 @@
             </router-link>
     
             <router-link :to="{ name: 'mis-pokemons' }" v-if="!bool_mis_pokemons" v-on:click="guardarPosicion">
-                <boton_inicio button_text="mis pokemons" id="sticky-boton" />
+                <boton_inicio button_text="mis pokemons" id="sticky-boton"/>
             </router-link>
-            <volver_arriba v-on:click="volverArriba()" v-if="scrollPosicion > 400"/>
         </div>
         
+        <volver_arriba id="volves_arriba" v-on:click="volverArriba()" v-if="scrollPosicion > 800"/>
+
         <div class="caja_pokemon">
             <div v-for="(pokemon, index) in pokemonImg" :key="pokemonID[index]" class="pokemon"
                 :class="getClase(pokemonID[index])" @click="$emit('toggle', pokemonID[index])">
@@ -33,9 +35,9 @@
 
 <script setup>
 import { ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
-import boton_inicio from '../elementos/boton_inicio.vue';
 import volver_arriba from '../elementos/volver_arriba.vue';
-
+import boton_cargarMas from "@/components/elementos/boton_cargarMas.vue";
+import boton_inicio from "@/components/elementos/boton_inicio.vue";
 const bool_HomePage = ref(false);
 const bool_gacha = ref(false);
 const bool_mis_pokemons = ref(false);
@@ -135,6 +137,11 @@ const volverArriba = () =>{
 <style scoped>
 .fondo_main {
   /* height: 82vh; */
-  background: linear-gradient(135deg, #00bcd4, #2196f3, #003366);
+  /* background: linear-gradient(135deg, #00bcd4, #2196f3, #003366); */
+}
+
+.volver_arriba{
+    width: 20%;
+    transform: translatey(55%);
 }
 </style>

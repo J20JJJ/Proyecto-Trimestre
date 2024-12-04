@@ -29,7 +29,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <header class="fondo">
+  <header class="fondo fondoApp">
     <titulo></titulo>
     <ver_galletas v-if="mostrarGalletas" />
     <!-- <sonidos/> -->

@@ -1,87 +1,89 @@
 <template>
-  <div class="pokedex">
-    <div class="panel left-panel">
-      <div class="pokemon-name screen">
-        {{ pokemonName }}
-        <span class="name-no">no. {{ idPokemon }}</span>
-      </div>
-
-      <div class="pokemon-sprite-container">
-        <!-- Usamos el índice 'currentImageIndex' para mostrar la imagen correspondiente -->
-        <img :src="pokemonImg[currentImageIndex]" alt="pokemon" class="pokemon-sprite">
-        <div class="sprite-controls">
-          <div class="sprite-control sprite-controls-gender" @click="changeToGender">
-            <svg xmlns="http://www.w3.org/2000/svg" height="19" width="19" viewBox="0 0 512 512">
-              <path
-                d="M337.8 14.8C341.5 5.8 350.3 0 360 0L472 0c13.3 0 24 10.7 24 24l0 112c0 9.7-5.8 18.5-14.8 22.2s-19.3 1.7-26.2-5.2l-39-39-24.7 24.7C407 163.3 416 192.6 416 224c0 80.2-59 146.6-136 158.2l0 25.8 24 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-24 0 0 32c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-32-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l24 0 0-25.8C155 370.6 96 304.2 96 224c0-88.4 71.6-160 160-160c39.6 0 75.9 14.4 103.8 38.2L382.1 80 343 41c-6.9-6.9-8.9-17.2-5.2-26.2zM448 48s0 0 0 0s0 0 0 0s0 0 0 0zM352 224a96 96 0 1 0 -192 0 96 96 0 1 0 192 0z" />
-            </svg>
+   
+      <div class="pokedex">
+        <div class="panel left-panel">
+          <div class="pokemon-name screen">
+            {{ pokemonName }}
+            <span class="name-no">no. {{ idPokemon }}</span>
           </div>
-          <div class="sprite-control sprite-controls-shiny" @click="changeToShiny">
-            <span>shiny</span>
+    
+          <div class="pokemon-sprite-container">
+            <!-- Usamos el índice 'currentImageIndex' para mostrar la imagen correspondiente -->
+            <img :src="pokemonImg[currentImageIndex]" alt="pokemon" class="pokemon-sprite">
+            <div class="sprite-controls">
+              <div class="sprite-control sprite-controls-gender" @click="changeToGender">
+                <svg xmlns="http://www.w3.org/2000/svg" height="19" width="19" viewBox="0 0 512 512">
+                  <path
+                    d="M337.8 14.8C341.5 5.8 350.3 0 360 0L472 0c13.3 0 24 10.7 24 24l0 112c0 9.7-5.8 18.5-14.8 22.2s-19.3 1.7-26.2-5.2l-39-39-24.7 24.7C407 163.3 416 192.6 416 224c0 80.2-59 146.6-136 158.2l0 25.8 24 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-24 0 0 32c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-32-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l24 0 0-25.8C155 370.6 96 304.2 96 224c0-88.4 71.6-160 160-160c39.6 0 75.9 14.4 103.8 38.2L382.1 80 343 41c-6.9-6.9-8.9-17.2-5.2-26.2zM448 48s0 0 0 0s0 0 0 0s0 0 0 0zM352 224a96 96 0 1 0 -192 0 96 96 0 1 0 192 0z" />
+                </svg>
+              </div>
+              <div class="sprite-control sprite-controls-shiny" @click="changeToShiny">
+                <span>shiny</span>
+              </div>
+              <div class="sprite-control sprite-controls-rotate" @click="rotateImage">
+                <svg xmlns="http://www.w3.org/2000/svg" height="15" width="15" viewBox="0 0 512 512">
+                  <path
+                    d="M212.3 224.3H12c-6.6 0-12-5.4-12-12V12C0 5.4 5.4 0 12 0h48c6.6 0 12 5.4 12 12v78.1C117.8 39.3 184.3 7.5 258.2 8c136.9 1 246.4 111.6 246.2 248.5C504 393.3 393.1 504 256.3 504c-64.1 0-122.5-24.3-166.5-64.2-5.1-4.6-5.3-12.6-.5-17.4l34-34c4.5-4.5 11.7-4.7 16.4-.5C170.8 415.3 211.6 432 256.3 432c97.3 0 176-78.7 176-176 0-97.3-78.7-176-176-176-58.5 0-110.3 28.5-142.3 72.3h98.3c6.6 0 12 5.4 12 12v48c0 6.6-5.4 12-12 12z" />
+                </svg>
+              </div>
+            </div>
           </div>
-          <div class="sprite-control sprite-controls-rotate" @click="rotateImage">
-            <svg xmlns="http://www.w3.org/2000/svg" height="15" width="15" viewBox="0 0 512 512">
-              <path
-                d="M212.3 224.3H12c-6.6 0-12-5.4-12-12V12C0 5.4 5.4 0 12 0h48c6.6 0 12 5.4 12 12v78.1C117.8 39.3 184.3 7.5 258.2 8c136.9 1 246.4 111.6 246.2 248.5C504 393.3 393.1 504 256.3 504c-64.1 0-122.5-24.3-166.5-64.2-5.1-4.6-5.3-12.6-.5-17.4l34-34c4.5-4.5 11.7-4.7 16.4-.5C170.8 415.3 211.6 432 256.3 432c97.3 0 176-78.7 176-176 0-97.3-78.7-176-176-176-58.5 0-110.3 28.5-142.3 72.3h98.3c6.6 0 12 5.4 12 12v48c0 6.6-5.4 12-12 12z" />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      <router-link :to="{ name: 'mis-pokemons' }" v-if="!paginabool">
-        <sus style='width: 100%;' :imgBTN="pokemonImg[0]"/>
-      </router-link>
-
-      <router-link :to="'/'" v-if="paginabool">
-        <sus style='width: 100%;' :imgBTN="pokemonImg[0]"/>
-      </router-link>
-
-
-      <div class="pokemon-description screen">
-        {{ description }}
-      </div>
-
-    </div>
-
-
-    <div class="divider">
-      <div class="gap"></div>
-      <div class="hinge"></div>
-      <div class="gap"></div>
-      <div class="hinge"></div>
-      <div class="gap"></div>
-      <div class="hinge"></div>
-      <div class="gap"></div>
-    </div>
-
-    <div class="panel right-panel">
-      <div class="panel-row">
-        <div class="type-list">
-          <div class="panel-header">Tipo</div>
-          <div class="type-box">
-            <div v-for="(tipo, index) in pokemonTipo" :key="index" class="type" :class="tipo">{{ tipo }}</div>
-          </div>
-        </div>
-      </div>
-      <div class="panel-header">Evolución</div>
-      <div class="panel-row panel-evo scroll_evos">
-        <div class="flex-center pokemon-sprite" v-for="(evolution, index) in pokemonEvolution" :key="index">
-          <router-link :to="{ name: 'pokedex', params: { id:  `${pagina}-${evolution.id}` } }" style="display: contents;">
-            <div class="evo-num"> {{ evolution.id }}</div>
-            <img :src="evolution.img" :alt="evolution.name" class="pokemon-sprite-evo" />
-            <div class="name-evo">{{ evolution.name }}</div>
+    
+          <router-link :to="{ name: 'mis-pokemons' }" v-if="!paginabool">
+            <sus style='width: 100%;' :imgBTN="pokemonImg[0]"/>
           </router-link>
+    
+          <router-link :to="'/'" v-if="paginabool">
+            <sus style='width: 100%;' :imgBTN="pokemonImg[0]"/>
+          </router-link>
+    
+    
+          <div class="pokemon-description screen">
+            {{ description }}
+          </div>
+    
+        </div>
+    
+    
+        <div class="divider">
+          <div class="gap"></div>
+          <div class="hinge"></div>
+          <div class="gap"></div>
+          <div class="hinge"></div>
+          <div class="gap"></div>
+          <div class="hinge"></div>
+          <div class="gap"></div>
+        </div>
+    
+        <div class="panel right-panel">
+          <div class="panel-row">
+            <div class="type-list">
+              <div class="panel-header">Tipo</div>
+              <div class="type-box">
+                <div v-for="(tipo, index) in pokemonTipo" :key="index" class="type" :class="tipo">{{ tipo }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-header">Evolución</div>
+          <div class="panel-row panel-evo scroll_evos">
+            <div class="flex-center pokemon-sprite" v-for="(evolution, index) in pokemonEvolution" :key="index">
+              <router-link :to="{ name: 'pokedex', params: { id:  `${pagina}-${evolution.id}` } }" style="display: contents;">
+                <div class="evo-num"> {{ evolution.id }}</div>
+                <img :src="evolution.img" :alt="evolution.name" class="pokemon-sprite-evo" />
+                <div class="name-evo">{{ evolution.name }}</div>
+              </router-link>
+            </div>
+          </div>
+    
+          <div class="panel-moves">
+            <div class="panel-header">Moves</div>
+            <div class="move-list scroll_moves">
+              <div v-for="(move, index) in pokemonAtaque" :key="index" class="type">{{ move }}</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="panel-moves">
-        <div class="panel-header">Moves</div>
-        <div class="move-list scroll_moves">
-          <div v-for="(move, index) in pokemonAtaque" :key="index" class="type">{{ move }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup>
@@ -399,4 +401,138 @@ onBeforeMount(async () => {
     console.error("Error al cargar la información del Pokémon:", error);
   }
 });
+
 </script>
+
+<style scoped>
+
+@media (max-width: 877px) {
+  .pokedex {
+    width: 60vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .pokedex {
+    width: calc(50vw + 1vh);
+    flex-direction: column;
+  }
+  .scroll_evos, .scroll_moves {
+    max-height: none;
+  }
+  
+}
+
+@media (max-width: 711px) {
+  .pokedex {
+    width: calc(50vw + 10vh);
+    flex-direction: column;
+  } 
+  .scroll_evos, .scroll_moves {
+    max-height: none;
+  }
+}
+
+@media (max-width: 497px) {
+  .pokedex {
+    width: 90vw;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .panel {
+    width: 95%;
+    margin-bottom: 10px;
+  }
+
+  .pokemon-name {
+    width: 95%;
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .pokemon-sprite-container {
+    justify-content: center; 
+    margin-bottom: 10px;
+  }
+
+  .pokemon-sprite {
+    width: 95%;
+    height: auto;
+  }
+
+  .sprite-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .sprite-control {
+    margin: 0 5px;
+  }
+
+  .pokemon-description {
+    font-size: 14px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .type-list {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .panel-header {
+    font-size: 16px;
+    
+  }
+
+  .panel-evo {
+    display: flex;
+    align-items: center;
+  }
+
+  .pokemon-sprite-evo {
+    height: auto;
+  }
+
+  .move-list {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .divider {
+    display: none; 
+  }
+
+  .type {
+    font-size: 12px; 
+    margin: 5px;
+  }
+
+  .evo-num, .name-evo {
+    font-size: 12px;
+  }
+
+  .move-list {
+    font-size: 12px;
+  }
+
+  .flex-center {
+    justify-content: center;
+  }
+
+  .scroll_evos, .scroll_moves {
+    max-height: none;
+  }
+
+  .pokemon-sprite-evo img {
+    max-width: 50px;
+  }
+
+  .sus {
+    width: 80%;
+  }
+}
+
+</style>

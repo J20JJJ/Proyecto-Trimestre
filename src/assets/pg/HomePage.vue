@@ -2,32 +2,20 @@
   <div>
     <!-- Buscador -->
     <div class="search-container">
-      <input
-        type="text"
-        class="search-input"
-        v-model="query"
-        placeholder="Buscar Pokémon..."
-        @input="filtrarPokemons"
-      />
+      <input type="text" class="search-input" v-model="query" placeholder="Buscar Pokémon..."
+        @input="filtrarPokemons" />
     </div>
 
-<!-- Botón de cargar más -->
-    <boton_cargarMas @click="cargarMasPokemons" v-if="botonDEcargarMas" id="sticky-button" class="cargar_mas_btn"/>
-
     <!-- Componente principal -->
-    <mainNewComponent
-      :pokemonImg="pokemonsFiltradosImg"
-      :pokemonName="pokemonsFiltradosName"
-      :pokemonID="pokemonsFiltradosID"
-      componente_actual="HomePage"
-      :misPokemons="misPokemons"
-    />
-
+    <mainNewComponent :pokemonImg="pokemonsFiltradosImg" :pokemonName="pokemonsFiltradosName"
+      :pokemonID="pokemonsFiltradosID" componente_actual="HomePage" :misPokemons="misPokemons" />
+    <!-- Botón de cargar más -->
+    <boton_cargarMas @click="cargarMasPokemons" v-if="botonDEcargarMas" />
   </div>
 </template>
 
 <script setup>
-import { ref, onBeforeMount, onMounted, onBeforeUnmount, watch  } from "vue";
+import { ref, onBeforeMount, onMounted, onBeforeUnmount, watch } from "vue";
 import mainNewComponent from "@/components/visual/mainNewComponent.vue";
 import boton_cargarMas from "@/components/elementos/boton_cargarMas.vue";
 import Cookies from "js-cookie";
@@ -151,11 +139,6 @@ filtrarPokemons();
 .search-input::placeholder {
   color: #aaa;
   font-style: italic;
-}
-
-.cargar_mas_btn{
-  transform: translateX(-30%) translateY(90%);
-  z-index: 11;
 }
 
 </style>

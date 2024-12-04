@@ -2,7 +2,7 @@
   <div class="fondo fondo_gacha">
 
 
-    
+
     <div class="d-flex justify-content-center mb-4 py-2">
       <router-link :to="'/'" class="mx-2">
         <boton_inicio button_text="HomePage" />
@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-      
+
     <div class="container my-3 alola-container" :class="verRegion()">
 
       <!-- Contenido del contenedor -->
@@ -89,7 +89,8 @@
         </div>
 
         <!-- Texto superpuesto al fondo -->
-        <div class="overlay-text" v-if="regiones[regionesNUM] !== 'NULL' && regionesNUM < regiones.length && regionesNUM >= 1">
+        <div class="overlay-text"
+          v-if="regiones[regionesNUM] !== 'NULL' && regionesNUM < regiones.length && regionesNUM >= 1">
           Probabilidad de {{ regiones[regionesNUM] }} incrementada
         </div>
 
@@ -150,8 +151,12 @@ const actualizarCookies = (idWin) => {
 
   } else {
     let dinero1 = parseInt(Cookies.get("dinero"), 10);
-    dinero.value = dinero1;
-  }
+    console.log("dinero1dinero1dinero1: ", dinero1)
+    if(dinero1>0){
+      console.log("dinero1dinero1dinero3: ", dinero1)
+      dinero.value = dinero1;
+    }
+   }
 
   misPokemons.value = [...new Set(misPokemons.value)].sort((a, b) => a - b);
   Cookies.set("misPokemons", JSON.stringify(misPokemons.value), {
@@ -219,10 +224,10 @@ async function tirarRuleta() {
     console.log("index: ", index);
 
     try {
-      if(regionEVENTO !== 'NULL'){
+      if (regionEVENTO !== 'NULL') {
         // Esperamos la respuesta de buscarLocalizaciones
         const localizaciones = await buscarLocalizaciones(index, regionEVENTO);
-  
+
         // Comprobamos si tiene alguna localización 'alola'
         if (localizaciones.length > 0) {
           console.log("ALOLA");
@@ -232,7 +237,7 @@ async function tirarRuleta() {
           esDeLaRegion = false;
           pokemonsEscapados.push(index);
         }
-      }else{
+      } else {
         esDeLaRegion = true;
       }
 
@@ -462,18 +467,11 @@ function verRegion() {
 
 .alola-container {
   position: relative;
-  /* Necesario para que el texto se superponga */
-  /* Ruta de tu imagen */
   background-size: cover;
-  /* Ajusta la imagen para cubrir el contenedor */
   background-position: center;
-  /* Centra la imagen */
   color: white;
-  /* Asegúrate de que el texto sea visible */
   padding: 20px;
-  /* Espaciado interno */
   border-radius: 10px;
-  /* Esquinas redondeadas, opcional */
 }
 
 .overlay-text {
@@ -495,4 +493,11 @@ function verRegion() {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   /* Sombra suave en el texto */
 }
+
+.fondo{
+
+  /* height: 82vh; */
+  background: linear-gradient(135deg, #00bcd4, #2196f3, #003366);
+}
+
 </style>
