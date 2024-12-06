@@ -4,9 +4,32 @@ import Cookies from 'js-cookie';
 import titulo from './components/elementos/titulo.vue';
 import sonidos from './components/elementos/sonidos.vue';
 import ver_galletas from './components/elementos/ver_galletas.vue';
+import switches from './components/elementos/switches.vue';
 import '@splidejs/vue-splide/css';
 
-// verificar el estado de la cookie
+const mostrarSonidos = ref('sonidos');
+function sonidosClick() {
+  console.log(mostrarSonidos.value);
+  console.log("entraaaaaa");
+  switch (mostrarSonidos.value) {
+    case 'sonidos': {
+      mostrarSonidos.value = 'a';
+      break;
+    }
+    case 'a': {
+      mostrarSonidos.value = '';
+      break;
+    }
+    case '': {
+      mostrarSonidos.value = 'e';
+      break;
+    }
+    case 'e': {
+      mostrarSonidos.value = 'sonidos';
+      break;
+    }
+  }
+};
 const mostrarGalletas = ref(true);
 
 const checkCookie = () => {
@@ -15,7 +38,6 @@ const checkCookie = () => {
 };
 
 onMounted(() => {
-  // Verifica la cookie al montarse el componente
   checkCookie();
 
   const interval = setInterval(() => {
@@ -32,9 +54,10 @@ onMounted(() => {
   <header class="fondo fondoApp">
     <titulo></titulo>
     <ver_galletas v-if="mostrarGalletas" />
-    <!-- <sonidos/> -->
+    <switches @click="sonidosClick" class="sonidos_switches"/>
+    <sonidos :id="mostrarSonidos" />
     <transition name="bounce">
-      <RouterView v-if="!mostrarGalletas"/>
+      <RouterView v-if="!mostrarGalletas" />
     </transition>
   </header>
 </template>
@@ -42,19 +65,32 @@ onMounted(() => {
 <style>
 @import "./../src/assets/styles.scss";
 
+#sonidos {
+  display: none;
+}
+
+.sonidos_switches {
+  position: absolute;
+  transform: translateX(-95vh);
+}
+
 .bounce-enter-active {
   animation: bounce-in .5s;
 }
+
 .bounce-leave-active {
   animation: bounce-in .5s reverse;
 }
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1.5);
   }
+
   100% {
     transform: scale(1);
   }
