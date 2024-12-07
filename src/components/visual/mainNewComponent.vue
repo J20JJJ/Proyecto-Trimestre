@@ -1,21 +1,25 @@
 <template>
     <div class="fondo_main">
-        
-        <div id="sticky-button" >
+
+        <div id="sticky-button">
             <router-link :to="'/'" v-if="!bool_HomePage" v-on:click="guardarPosicion">
                 <boton_inicio button_text="HomePage" id="sticky-boton" />
             </router-link>
-    
+
             <router-link :to="{ name: 'gacha' }" v-if="!bool_gacha" v-on:click="guardarPosicion">
                 <boton_inicio button_text="gacha" id="sticky-boton" />
             </router-link>
-    
+
             <router-link :to="{ name: 'mis-pokemons' }" v-if="!bool_mis_pokemons" v-on:click="guardarPosicion">
-                <boton_inicio button_text="mis pokemons" id="sticky-boton"/>
+                <boton_inicio button_text="mis pokemons" id="sticky-boton" />
             </router-link>
         </div>
-        
-        <volver_arriba id="volves_arriba" v-on:click="volverArriba()" v-if="scrollPosicion > 800"/>
+
+        <volver_arriba id="volves_arriba" v-on:click="volverArriba()" v-if="scrollPosicion > 800" />
+
+        <div v-if="pokemonImg.length !== 0" class="cargando_pokemons">
+            <cargando />
+        </div>
 
         <div class="caja_pokemon">
             <div v-for="(pokemon, index) in pokemonImg" :key="pokemonID[index]" class="pokemon"
@@ -26,8 +30,6 @@
                     <p>{{ pokemonName[index] }}</p>
                     <p>{{ pokemonID[index] }}</p>
                 </router-link>
-
-
             </div>
         </div>
     </div>
@@ -36,7 +38,7 @@
 <script setup>
 import { ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
 import volver_arriba from '../elementos/volver_arriba.vue';
-import boton_cargarMas from "@/components/elementos/boton_cargarMas.vue";
+import cargando from '../elementos/cargando.vue';
 import boton_inicio from "@/components/elementos/boton_inicio.vue";
 const bool_HomePage = ref(false);
 const bool_gacha = ref(false);
@@ -129,18 +131,18 @@ onBeforeUnmount(() => {
     window.removeEventListener('scroll', manejarScroll); // Eliminar el evento cuando el componente se destruya
 });
 
-const volverArriba = () =>{
+const volverArriba = () => {
     window.scrollTo(0, 0);
 };
 </script>
 
 <style scoped>
 .fondo_main {
-  /* height: 82vh; */
-  /* background: linear-gradient(135deg, #00bcd4, #2196f3, #003366); */
+    /* height: 82vh; */
+    /* background: linear-gradient(135deg, #00bcd4, #2196f3, #003366); */
 }
 
-.volver_arriba{
+.volver_arriba {
     width: 20%;
     transform: translatey(55%);
 }

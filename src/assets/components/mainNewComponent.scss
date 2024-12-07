@@ -3,6 +3,11 @@
     filter: grayscale(80%) brightness(0.7);
 }
 
+.cargando_pokemons {
+    display: flex;
+    justify-content: center;
+}
+
 .fondo {
     // background-image: url("../img/wp8813120.webp");
     text-align: center;
@@ -28,7 +33,7 @@
         z-index: 999;
     }
 
-    .loading-indicator{
+    .loading-indicator {
         margin-left: 41vh;
     }
 

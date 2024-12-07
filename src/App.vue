@@ -54,7 +54,9 @@ onMounted(() => {
   <header class="fondo fondoApp">
     <titulo></titulo>
     <ver_galletas v-if="mostrarGalletas" />
-    <switches @click="sonidosClick" class="sonidos_switches"/>
+    <div class="sonidos_switches">
+      <switches @click="sonidosClick" class=""/>
+    </div>
     <sonidos :id="mostrarSonidos" />
     <transition name="bounce">
       <RouterView v-if="!mostrarGalletas" />
@@ -70,8 +72,9 @@ onMounted(() => {
 }
 
 .sonidos_switches {
-  position: absolute;
-  transform: translateX(-95vh);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .bounce-enter-active {
