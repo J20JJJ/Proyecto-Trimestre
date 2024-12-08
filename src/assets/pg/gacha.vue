@@ -43,7 +43,7 @@
       </div>
 
       <div class="text-center mb-4">
-        <div ref="animatedDiv" class="h2 fw-bold text-uppercase text-primary text-shadow">
+        <div ref="animatedDiv" class="text-stroke fs-1 fw-bold text-uppercase text-shadow">
           {{ dinero }} Pokécoins
         </div>
       </div>
@@ -374,9 +374,11 @@ function animateText() {
   if (animatedDiv.value) {
     // Añade la clase animada
     animatedDiv.value.classList.add("animated-text");
+    animatedDiv.value.classList.remove("text-white");
     // Quita la clase después de 2 segundos
     setTimeout(() => {
       animatedDiv.value.classList.remove("animated-text");
+      animatedDiv.value.classList.add("text-white");
     }, 1000); // Duración de la animación
   }
 }
@@ -498,6 +500,44 @@ function verRegion() {
 
   /* height: 82vh; */
   background: linear-gradient(135deg, #00bcd4, #2196f3, #003366);
+}
+
+.text-stroke {
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+}
+
+@keyframes animacionTexto {
+    1% {
+        transform: scale(1);
+        color: black;
+    }
+
+    25% {
+        transform: scale(1.5);
+        color: red;
+    }
+
+    50% {
+        transform: scale(1.5);
+        color: red;
+    }
+
+    75% {
+        transform: scale(1.5);
+        color: red;
+        /* transform: scale(1.5) rotate(5deg); */
+    }
+
+    100% {
+        transform: scale(1);
+        color: black;
+    }
+}
+
+.animated-text {
+    font-size: 2rem;
+    animation: animacionTexto 1s ease-in-out;
 }
 
 </style>
