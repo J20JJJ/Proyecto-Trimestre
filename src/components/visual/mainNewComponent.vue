@@ -17,7 +17,7 @@
 
         <volver_arriba id="volves_arriba" v-on:click="volverArriba()" v-if="scrollPosicion > 800" />
 
-        <div v-if="pokemonImg.length !== 0" class="cargando_pokemons">
+        <div v-if="pokemonImg.length === 0" class="cargando_pokemons">
             <cargando />
         </div>
 
