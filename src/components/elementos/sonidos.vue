@@ -53,45 +53,71 @@ let musica = ref([]);
 let ver_name_cancion = ref("Ninguna canción en reproducción");
 
 async function buscarCancionesSimilar(idCancion, apiKey) {
-  console.log("idCancion2: ", idCancion);
+  try {
+    console.log("idCancion2: ", idCancion);
 
-  const response = await fetch(
-    `https://freesound.org/apiv2/sounds/${idCancion}/similar/?format=json&token=${apiKey}`
-  );
-  const data = await response.json();
-  // console.log(data)
-  return {
-    similares: data.results.map((a) => a.id),
-  };
+    const response = await fetch(
+      `https://freesound.org/apiv2/sounds/${idCancion}/similar/?format=json&token=${apiKey}`
+    );
+
+    // Verificar si la respuesta es correcta (status 200)
+    if (!response.ok) {
+      throw new Error(`Error en la respuesta: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    return {
+      similares: data.results.map((a) => a.id),
+    };
+  } catch (error) {
+    console.error("Error al buscar canciones similares:", error);
+    return { similares: [], error: error.message };  // Retorna un objeto con el error
+  }
 }
+
 
 
 
 async function playCancion(idCancion, apiKey) {
-  console.log("idCancion: ", idCancion);
+  try {
+    console.log("idCancion: ", idCancion);
 
-  let nameCancion = [];
-  let sonido = [];
-  console.log("idCancion.value.length: ", idCancion.length);
+    let nameCancion = [];
+    let sonido = [];
+    console.log("idCancion.value.length: ", idCancion.length);
 
-  for (let i = 0; i < idCancion.length; i++) {
-    console.log("i: ", i);
-    const response = await fetch(
-      `https://freesound.org/apiv2/sounds/${idCancion[i]}/?fields=id%2Cname%2Cpreviews&format=json&token=${apiKey}`
-    );
-    const data = await response.json();
+    for (let i = 0; i < idCancion.length; i++) {
+      console.log("i: ", i);
+      
+      const response = await fetch(
+        `https://freesound.org/apiv2/sounds/${idCancion[i]}/?fields=id%2Cname%2Cpreviews&format=json&token=${apiKey}`
+      );
 
-    nameCancion = nameCancion.concat(data.name);
-    sonido = sonido.concat(data.previews["preview-hq-mp3"]);
+      // Verificar si la respuesta es correcta (status 200)
+      if (!response.ok) {
+        throw new Error(`Error en la respuesta para id ${idCancion[i]}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      nameCancion = nameCancion.concat(data.name);
+      sonido = sonido.concat(data.previews["preview-hq-mp3"]);
+    }
+
+    console.log("nameCancion: ", nameCancion);
+    console.log("sonido: ", sonido);
+
+    return {
+      nameCancion,
+      sonido,
+    };
+  } catch (error) {
+    console.error("Error al obtener la canción:", error);
+    return { nameCancion: [], sonido: [], error: error.message };  // Retorna un objeto con el error
   }
-  console.log("nameCancion: ", nameCancion);
-  console.log("sonido: ", sonido);
-  // console.log(data)
-  return {
-    nameCancion,
-    sonido,
-  };
 }
+
 
 let estadoCancion = false;
 let audioActual = ref(null); // Variable para almacenar la instancia de audio actual

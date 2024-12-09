@@ -77,7 +77,8 @@
 
 <template>
   <label class="switch">
-    <input type="checkbox">
+    <input type="checkbox" @click="$emit('boton-pulsado')">
+    <!-- @click="llamarPadre" -->
     <div class="slider"></div>
     <div class="slider-card">
       <div class="slider-card-face slider-card-front"></div>
@@ -85,3 +86,14 @@
     </div>
   </label>
 </template>
+
+<script setup>
+import { defineProps } from 'vue';
+
+// Definir el evento que se emitirá
+// const emit = defineEmits();
+
+const prueba = () => {
+      console.log("innn");
+   }
+</script>

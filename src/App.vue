@@ -7,28 +7,25 @@ import ver_galletas from './components/elementos/ver_galletas.vue';
 import switches from './components/elementos/switches.vue';
 import '@splidejs/vue-splide/css';
 
+// Función que se ejecutará cuando el evento sea capturado
 const mostrarSonidos = ref('sonidos');
-function sonidosClick() {
+const manejarBotonPulsado = () => {
   console.log(mostrarSonidos.value);
-  console.log("entraaaaaa");
   switch (mostrarSonidos.value) {
     case 'sonidos': {
-      mostrarSonidos.value = 'a';
-      break;
-    }
-    case 'a': {
       mostrarSonidos.value = '';
       break;
     }
     case '': {
-      mostrarSonidos.value = 'e';
-      break;
-    }
-    case 'e': {
       mostrarSonidos.value = 'sonidos';
       break;
     }
   }
+};
+
+
+const sonidosClick = () => {
+ 
 };
 const mostrarGalletas = ref(true);
 
@@ -51,11 +48,13 @@ onMounted(() => {
 </script>
 
 <template>
+
   <header class="fondo fondoApp">
     <titulo></titulo>
     <ver_galletas v-if="mostrarGalletas" />
     <div class="sonidos_switches">
-      <switches @click="sonidosClick" class=""/>
+      <switches @boton-pulsado="manejarBotonPulsado" />
+      <!-- @mouseup="sonidosClick" -->
     </div>
     <sonidos :id="mostrarSonidos" />
     <transition name="bounce">
