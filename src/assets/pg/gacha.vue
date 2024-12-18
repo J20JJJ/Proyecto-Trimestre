@@ -113,7 +113,7 @@ import whosthatPokemon from "@/components/elementos/whosthatPokemon.vue";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importar Bootstrap solo en este componente
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-const regiones = ref(['NULL', 'Alola', 'Galar', 'Hoenn', 'Johto', 'Kalos', 'Kanto', 'Sinnoh', 'Unova']);
+const regiones = ref(['NULL', 'Alola', 'Hoenn', 'Johto', 'Kalos', 'Kanto', 'Sinnoh', 'Unova']);
 const regionesNUM = ref(0);
 
 const showConfetti = ref(false);
@@ -224,21 +224,24 @@ async function tirarRuleta() {
     console.log("index: ", index);
 
     try {
-      if (regionEVENTO !== 'NULL') {
-        // Esperamos la respuesta de buscarLocalizaciones
-        const localizaciones = await buscarLocalizaciones(index, regionEVENTO);
+      if(index < 807){
 
-        // Comprobamos si tiene alguna localización 'alola'
-        if (localizaciones.length > 0) {
-          console.log("ALOLA");
-          esDeLaRegion = true;
+        if (regionEVENTO !== 'NULL') {
+          // Esperamos la respuesta de buscarLocalizaciones
+          const localizaciones = await buscarLocalizaciones(index, regionEVENTO);
+  
+          // Comprobamos si tiene alguna localización 'alola'
+          if (localizaciones.length > 0) {
+            console.log("ALOLA");
+            esDeLaRegion = true;
+          } else {
+            console.log("No ALOLA");
+            esDeLaRegion = false;
+            pokemonsEscapados.push(index);
+          }
         } else {
-          console.log("No ALOLA");
-          esDeLaRegion = false;
-          pokemonsEscapados.push(index);
+          esDeLaRegion = true;
         }
-      } else {
-        esDeLaRegion = true;
       }
 
       // Si es de la región, realizamos el cálculo del porcentaje
@@ -408,6 +411,7 @@ function verRegion() {
   } else {
     const eventos_random = Math.floor(Math.random() * regiones.value.length);
     regionesNUM.value = eventos_random;
+    
     const fin_evento_random = Math.floor(Math.random() * (31 - 15 + 1) + 15);
     // let treinta_segundos = (((1/24)/60)/60)/2;
     Cookies.set("eventos", eventos_random, { expires: fin_evento_random });
