@@ -97,7 +97,7 @@ const fetchQuestions = () => {
       loadQuestion();
     })
     .catch(err => {
-      console.error('Error fetching Pokémon data:', err);
+      // console.error('Error fetching Pokémon data:', err);
     });
 };
 
@@ -163,13 +163,13 @@ const checkAnswer = (selectedOption) => {
     bgColor.value = "#1db12a";
     let dinero = Cookies.get("dinero");
     dinero = parseInt(dinero, 10);
-    console.log("dinero0: ", dinero);
+    // console.log("dinero0: ", dinero);
     if (dinero) {
-      console.log("dinero1: ", dinero);
+      // console.log("dinero1: ", dinero);
       dinero += 10;
-      console.log("dinero2: ", dinero);
+      // console.log("dinero2: ", dinero);
 
-      Cookies.set("dinero", dinero, { expires: 36500 });
+      // Cookies.set("dinero", dinero, { expires: 36500 });
     }
 
     score.value++;

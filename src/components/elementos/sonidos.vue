@@ -54,7 +54,7 @@ let ver_name_cancion = ref("Ninguna canción en reproducción");
 
 async function buscarCancionesSimilar(idCancion, apiKey) {
   try {
-    console.log("idCancion2: ", idCancion);
+    // console.log("idCancion2: ", idCancion);
 
     const response = await fetch(
       `https://freesound.org/apiv2/sounds/${idCancion}/similar/?format=json&token=${apiKey}`
@@ -71,7 +71,7 @@ async function buscarCancionesSimilar(idCancion, apiKey) {
       similares: data.results.map((a) => a.id),
     };
   } catch (error) {
-    console.error("Error al buscar canciones similares:", error);
+    // console.error("Error al buscar canciones similares:", error);
     return { similares: [], error: error.message };  // Retorna un objeto con el error
   }
 }
@@ -81,14 +81,14 @@ async function buscarCancionesSimilar(idCancion, apiKey) {
 
 async function playCancion(idCancion, apiKey) {
   try {
-    console.log("idCancion: ", idCancion);
+    // console.log("idCancion: ", idCancion);
 
     let nameCancion = [];
     let sonido = [];
-    console.log("idCancion.value.length: ", idCancion.length);
+    // console.log("idCancion.value.length: ", idCancion.length);
 
     for (let i = 0; i < idCancion.length; i++) {
-      console.log("i: ", i);
+      // console.log("i: ", i);
       
       const response = await fetch(
         `https://freesound.org/apiv2/sounds/${idCancion[i]}/?fields=id%2Cname%2Cpreviews&format=json&token=${apiKey}`
@@ -105,15 +105,15 @@ async function playCancion(idCancion, apiKey) {
       sonido = sonido.concat(data.previews["preview-hq-mp3"]);
     }
 
-    console.log("nameCancion: ", nameCancion);
-    console.log("sonido: ", sonido);
+    // console.log("nameCancion: ", nameCancion);
+    // console.log("sonido: ", sonido);
 
     return {
       nameCancion,
       sonido,
     };
   } catch (error) {
-    console.error("Error al obtener la canción:", error);
+    // console.error("Error al obtener la canción:", error);
     return { nameCancion: [], sonido: [], error: error.message };  // Retorna un objeto con el error
   }
 }
@@ -130,7 +130,7 @@ const updateVolume = () => {
   // Aquí calculamos el porcentaje y lo mostramos en consola
   const porcentage = volume.value / 100;
   audioActual.value.volume = porcentage;
-  console.log(`Volumen: ${porcentage}%`);
+  // console.log(`Volumen: ${porcentage}%`);
 };
 
 function playAudio(index) {
@@ -158,7 +158,7 @@ function playAudio(index) {
       }
       case -3: {
         num_audioActual += 1;
-        console.log("musica.value: ", musica.value.length - 1)
+        // console.log("musica.value: ", musica.value.length - 1)
         if (num_audioActual > musica.value.length - 1) {
           num_audioActual = musica.value.length - 1;
         }
@@ -175,7 +175,7 @@ function playAudio(index) {
     num_audioActual = index;
   }
 
-  console.log("index: ", index);
+  // console.log("index: ", index);
   ver_name_cancion.value = name_Cancion.value[index];
 
   const progressBar = document.getElementById("bar");
@@ -186,15 +186,15 @@ function playAudio(index) {
     // Añadir un listener para cuando la canción termine
     audioActual.value.addEventListener("ended", () => {
       if (index + 1 < musica.value.length && estadoCancion) {
-        console.log(`Reproduciendo siguiente canción: ${musica.value[index]}`);
+        // console.log(`Reproduciendo siguiente canción: ${musica.value[index]}`);
         estadoCancion = false;
-        console.log("index44: ", index);
+        // console.log("index44: ", index);
         playAudio(-3); // Reproducir la siguiente canción
       } else if (estadoCancion) {
         estadoCancion = false;
-        console.log("No hay más canciones para reproducir.");
+        // console.log("No hay más canciones para reproducir.");
       } else {
-        console.log("Canción en pausa");
+        // console.log("Canción en pausa");
       }
     });
   }
@@ -203,15 +203,15 @@ function playAudio(index) {
   if (!estadoCancion) {
     estadoCancion = true;
     audioActual.value.play();
-    console.log(`Reproduciendo canción: ${musica.value[index]}`);
-    console.log("index2: ", index);
+    // console.log(`Reproduciendo canción: ${musica.value[index]}`);
+    // console.log("index2: ", index);
     // Iniciar un intervalo para mostrar el progreso
     progresoInterval.value = setInterval(() => {
       if (audioActual.value) {
         let progreso = Math.floor(
           (audioActual.value.currentTime / audioActual.value.duration) * 100
         );
-        console.log(`Progreso: ${progreso}%`);
+        // console.log(`Progreso: ${progreso}%`);
 
         progressBar.style.width = `${progreso}%`;
 
@@ -224,7 +224,7 @@ function playAudio(index) {
   } else {
     estadoCancion = false;
     audioActual.value.pause();
-    console.log(`Pausando canción: ${musica.value[index]}`);
+    // console.log(`Pausando canción: ${musica.value[index]}`);
   }
 }
 
@@ -240,18 +240,18 @@ onBeforeMount(async () => {
       );
       //   id_musica_similar.value.unshift(idCancion);
       const cancion = await playCancion(id_musica_similar.value, apiKey);
-      console.log("cancion.sonido: ", cancion.sonido);
-      console.log("cancion.nameCancion: ", cancion.nameCancion);
+      // console.log("cancion.sonido: ", cancion.sonido);
+      // console.log("cancion.nameCancion: ", cancion.nameCancion);
       if (cancion) {
         // Asigna el nuevo valor al array
         name_Cancion.value = name_Cancion.value.concat(...cancion.nameCancion);
         musica.value = musica.value.concat(...cancion.sonido); // Si quieres agregar el sonido a musica
-        console.log("musica.value[0]: ", musica.value[0]);
+        // console.log("musica.value[0]: ", musica.value[0]);
         // playAudio(0);
       }
     }
   } catch (error) {
-    console.error("Error al cargar:", error);
+    // console.error("Error al cargar:", error);
   }
   //   playAudio(0);
 });

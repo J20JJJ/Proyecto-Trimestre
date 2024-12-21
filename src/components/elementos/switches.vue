@@ -94,6 +94,6 @@ import { defineProps } from 'vue';
 // const emit = defineEmits();
 
 const prueba = () => {
-      console.log("innn");
+      // console.log("innn");
    }
 </script>

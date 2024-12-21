@@ -10,7 +10,7 @@ import '@splidejs/vue-splide/css';
 // Función que se ejecutará cuando el evento sea capturado
 const mostrarSonidos = ref('sonidos');
 const manejarBotonPulsado = () => {
-  console.log(mostrarSonidos.value);
+  //console.log(mostrarSonidos.value);
   switch (mostrarSonidos.value) {
     case 'sonidos': {
       mostrarSonidos.value = '';

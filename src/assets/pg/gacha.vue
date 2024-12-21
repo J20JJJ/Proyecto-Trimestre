@@ -151,9 +151,9 @@ const actualizarCookies = (idWin) => {
 
   } else {
     let dinero1 = parseInt(Cookies.get("dinero"), 10);
-    console.log("dinero1dinero1dinero1: ", dinero1)
+    // console.log("dinero1dinero1dinero1: ", dinero1)
     if(dinero1>0){
-      console.log("dinero1dinero1dinero3: ", dinero1)
+      // console.log("dinero1dinero1dinero3: ", dinero1)
       dinero.value = dinero1;
     }
    }
@@ -165,7 +165,7 @@ const actualizarCookies = (idWin) => {
 
   Cookies.set("dinero", dinero.value, { expires: 36500 });
 
-  console.log("Cookies actualizadas");
+  // console.log("Cookies actualizadas");
 };
 
 function buscarLocalizaciones(pokemonId, regionBuscada) {
@@ -208,7 +208,7 @@ async function tirarRuleta() {
   verResultado.value = false;
   verContenido.value = false;
 
-  console.log("entra!!!");
+  // console.log("entra!!!");
 
   let pokemonsEscapados = [];
 
@@ -217,11 +217,11 @@ async function tirarRuleta() {
   let esDeLaRegion = false;
 
   let regionEVENTO = regiones.value[regionesNUM.value];
-  console.log("gato génesis de CryptoKitties", regionEVENTO)
+  // console.log("gato génesis de CryptoKitties", regionEVENTO)
 
   while (true) {
     index = Math.floor(Math.random() * 1025);
-    console.log("index: ", index);
+    // console.log("index: ", index);
 
     try {
       if(index < 807){
@@ -232,10 +232,10 @@ async function tirarRuleta() {
   
           // Comprobamos si tiene alguna localización 'alola'
           if (localizaciones.length > 0) {
-            console.log("ALOLA");
+            // console.log("ALOLA");
             esDeLaRegion = true;
           } else {
-            console.log("No ALOLA");
+            // console.log("No ALOLA");
             esDeLaRegion = false;
             pokemonsEscapados.push(index);
           }
@@ -254,15 +254,15 @@ async function tirarRuleta() {
 
         porcentaje = (capture_rate / 255) * 100;
 
-        console.log("capture_rate: ", capture_rate);
-        console.log("porcentaje: ", porcentaje);
+        // console.log("capture_rate: ", capture_rate);
+        // console.log("porcentaje: ", porcentaje);
 
         let win = Math.random() * 100;
-        console.log("win: ", win);
+        // console.log("win: ", win);
 
         // Si el número aleatorio es menor que el porcentaje, se gana
         if (win < porcentaje) {
-          console.log("GANAS!!!");
+          // console.log("GANAS!!!");
           pokemonsEscapados.push(index);
 
           getPokemonEscapados(pokemonsEscapados, index);
@@ -272,11 +272,11 @@ async function tirarRuleta() {
         }
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }
 
-  console.log("Sales!!!");
+  // console.log("Sales!!!");
   let idWin = index;
   return {
     idWin,
@@ -289,30 +289,30 @@ async function getPokemonEscapados(pokemonsEscapados, idWin) {
 
   // Cargar cada imagen
   for (let i = 0; i < pokemonsEscapados.length; i++) {
-    console.log(`Cargando Pokémon con ID: ${pokemonsEscapados[i]}`);
+    // console.log(`Cargando Pokémon con ID: ${pokemonsEscapados[i]}`);
     const response = await fetch(
       `https://pokeapi.co/api/v2/pokemon/${pokemonsEscapados[i]}/`
     );
 
     if (!response.ok) {
-      console.error(`Error al cargar Pokémon con ID: ${pokemonsEscapados[i]}`);
+      // console.error(`Error al cargar Pokémon con ID: ${pokemonsEscapados[i]}`);
       continue;
     }
 
     const data = await response.json();
-    console.log("Respuesta de la API:", data); // Verifica la respuesta de la API
+    // console.log("Respuesta de la API:", data); // Verifica la respuesta de la API
 
     if (data.sprites && data.sprites.front_default) {
       pokemonsEscapadosIMG.value.push(data.sprites.front_default);
     } else {
-      console.warn(
-        `No se encontró la imagen para el Pokémon ID: ${pokemonsEscapados[i]}`
-      );
+      // console.warn(
+      //   `No se encontró la imagen para el Pokémon ID: ${pokemonsEscapados[i]}`
+      // );
     }
   }
 
   // Verifica que se hayan agregado las imágenes
-  console.log("Imágenes cargadas: ", pokemonsEscapadosIMG.value);
+  // console.log("Imágenes cargadas: ", pokemonsEscapadosIMG.value);
   tirarGacha.value = true;
 
   setTimeout(() => {
@@ -355,7 +355,7 @@ async function tirar() {
     try {
       const pokemonWin = await tirarRuleta();
       if (pokemonWin) {
-        console.log("pokemonWin.idWin: ", pokemonWin.idWin);
+        // console.log("pokemonWin.idWin: ", pokemonWin.idWin);
         const pokemonPromises = await getPokemonData(pokemonWin.idWin);
 
         capture_rate.value = pokemonWin.porcentaje;
@@ -367,7 +367,7 @@ async function tirar() {
         }
       }
     } catch (error) {
-      console.error("Error al cargar:", error);
+      // console.error("Error al cargar:", error);
     }
   }
 }
@@ -407,7 +407,7 @@ function verRegion() {
   const eventos = Cookies.get("eventos");
   if (eventos) {
     regionesNUM.value = parseInt(Cookies.get("eventos"), 10);
-    console.log(`si hay cookie`)
+    // console.log(`si hay cookie`)
   } else {
     const eventos_random = Math.floor(Math.random() * regiones.value.length);
     regionesNUM.value = eventos_random;
@@ -415,10 +415,10 @@ function verRegion() {
     const fin_evento_random = Math.floor(Math.random() * (31 - 15 + 1) + 15);
     // let treinta_segundos = (((1/24)/60)/60)/2;
     Cookies.set("eventos", eventos_random, { expires: fin_evento_random });
-    console.log(`no hay cookie`)
+    // console.log(`no hay cookie`)
   }
 
-  console.log(`img-${regiones.value[regionesNUM.value]}`)
+  // console.log(`img-${regiones.value[regionesNUM.value]}`)
 
   return `img-${regiones.value[regionesNUM.value]}`
 

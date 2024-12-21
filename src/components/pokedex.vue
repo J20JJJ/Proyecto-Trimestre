@@ -229,7 +229,7 @@ const idPokemon = ref('');
 
 let route = useRoute();
 let pokemonID = props.id;
-console.log("props.pokemonID: ", props.id)
+// console.log("props.pokemonID: ", props.id)
 
 const pokemonIDProp = props.id;
 
@@ -256,7 +256,7 @@ watch(
 
     newId = idPokemon.value;
 
-    console.log('El id cambió de', oldId, 'a', newId)
+    // console.log('El id cambió de', oldId, 'a', newId)
     sacar_info(newId);
   },
   { immediate: true }
@@ -296,7 +296,7 @@ async function getPokemonEspecie(ind) {
 async function getPokemonEvolution(indE) {
   try {
     const response = await fetch(indE);
-    console.log("sdsd: ", indE)
+    // console.log("sdsd: ", indE)
     const data = await response.json();
 
     if (data.chain) {
@@ -327,7 +327,7 @@ async function getPokemonEvolution(indE) {
       };
     }
   } catch (error) {
-    console.error("Error en getPokemonEvolution:", error);
+    // console.error("Error en getPokemonEvolution:", error);
     return { allEvolutionUrls: [] };
   }
 }
@@ -356,12 +356,12 @@ async function sacar_info(pokemon1) {
     pokemonTipo.value.push(...pokemon.tipos);
     pokemonAtaque.value.push(...pokemon.ataques);
 
-    console.log("pokemonAtaque: ", pokemonAtaque.value)
+    // console.log("pokemonAtaque: ", pokemonAtaque.value)
 
     // Obtener la especie para obtener la evolución
     const especie = await getPokemonEspecie(pokemon1);
     if (especie) {
-      console.log("especie: ", especie)
+      // console.log("especie: ", especie)
       // Obtener la evolución
       const evolution = await getPokemonEvolution(especie.evolution_chain_url);
       description = especie.description1
@@ -384,7 +384,7 @@ async function sacar_info(pokemon1) {
             });
           }
         });
-        console.log("pokemonEvolution: ", pokemonEvolution.value)
+        // console.log("pokemonEvolution: ", pokemonEvolution.value)
       }
     }
   }
@@ -398,7 +398,7 @@ onBeforeMount(async () => {
 
 
   } catch (error) {
-    console.error("Error al cargar la información del Pokémon:", error);
+    // console.error("Error al cargar la información del Pokémon:", error);
   }
 });
 

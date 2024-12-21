@@ -51,7 +51,7 @@ onBeforeMount(async () => {
     const savedPokemons = Cookies.get("misPokemons");
     if (savedPokemons) {
       misPokemons.value = JSON.parse(savedPokemons);
-      console.log("Cookies leídas");
+      // console.log("Cookies leídas");
     }
 
     const response = await fetch(
@@ -61,7 +61,7 @@ onBeforeMount(async () => {
     listaCompletaPokemons.value = data.results;
     cargarMasPokemons();
   } catch (error) {
-    console.error("Error al cargar:", error);
+    // console.error("Error al cargar:", error);
   }
 });
 

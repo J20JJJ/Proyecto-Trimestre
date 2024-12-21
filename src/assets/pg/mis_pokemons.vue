@@ -68,7 +68,7 @@
   
       filtrarPokemons();
     } catch (error) {
-      console.error("Error al cargar:", error);
+      // console.error("Error al cargar:", error);
     }
   });
   

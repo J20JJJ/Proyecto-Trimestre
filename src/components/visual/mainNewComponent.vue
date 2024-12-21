@@ -85,7 +85,7 @@ switch (props.componente_actual) {
 }
 
 function getClase(pokemon) {
-    console.log("asas: ", props.misPokemons[0])
+    // console.log("asas: ", props.misPokemons[0])
     let bloqueado = true;
     if (props.misPokemons.includes(pokemon)) {
         bloqueado = false;
@@ -100,7 +100,7 @@ const scrollPosicion = ref(0);
 const guardarPosicion = () => {
     scrollPosicion.value = window.scrollY; // Guardamos la posición actual del scroll
     localStorage.setItem('posicionScroll', scrollPosicion.value); // Guardamos la posición en localStorage
-    console.log('Posición guardada:', scrollPosicion.value);
+    // console.log('Posición guardada:', scrollPosicion.value);
 };
 
 const cargarPosicion = () => {
@@ -110,9 +110,9 @@ const cargarPosicion = () => {
         if (posicionGuardada) {
             scrollPosicion.value = parseInt(posicionGuardada); // Recuperamos la posición del scroll desde localStorage
             window.scrollTo(0, scrollPosicion.value); // Desplazamos la página a la posición guardada
-            console.log('Posición cargada:', scrollPosicion.value);
+            // console.log('Posición cargada:', scrollPosicion.value);
         } else {
-            console.log('No hay posición guardada');
+            // console.log('No hay posición guardada');
         }
     }, 2000);
 
