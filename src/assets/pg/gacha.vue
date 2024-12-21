@@ -300,15 +300,13 @@ async function getPokemonEscapados(pokemonsEscapados, idWin) {
     }
 
     const data = await response.json();
-    // console.log("Respuesta de la API:", data); // Verifica la respuesta de la API
+    // console.log("Respuesta de la API:", data); 
 
     if (data.sprites && data.sprites.front_default) {
       pokemonsEscapadosIMG.value.push(data.sprites.front_default);
-    } else {
-      // console.warn(
-      //   `No se encontró la imagen para el Pokémon ID: ${pokemonsEscapados[i]}`
-      // );
-    }
+    } //else {
+      // console.warn(`No se encontró la imagen para el Pokémon ID: ${pokemonsEscapados[i]}`);
+    // }
   }
 
   // Verifica que se hayan agregado las imágenes

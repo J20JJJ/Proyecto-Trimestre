@@ -169,7 +169,7 @@ const checkAnswer = (selectedOption) => {
       dinero += 10;
       // console.log("dinero2: ", dinero);
 
-      // Cookies.set("dinero", dinero, { expires: 36500 });
+      Cookies.set("dinero", dinero, { expires: 36500 });
     }
 
     score.value++;
