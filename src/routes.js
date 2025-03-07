@@ -32,7 +32,12 @@ const router = createRouter({
                     path: 'whosthatPokemon',
                     name: 'whosthatPokemon',
                     component: () => import("./components/elementos/whosthatPokemon.vue")
-                }                
+                },
+                {
+                    path: 'chat',
+                    name: 'chat',
+                    component: () => import("./assets/pg/chat_page.vue")
+                }                 
             ]
         }
     ]
