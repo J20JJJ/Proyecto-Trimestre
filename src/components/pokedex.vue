@@ -21,7 +21,7 @@
                 <span>shiny</span>
               </div>
 
-              <Chat_btn style="width: 40px; height: auto;" @click="ID_pokemon().guardarID(idPokemon) ,$router.push({ name: 'chat' })"/>
+              <Chat_btn class="S-Chat_btn" @click="ID_pokemon().guardarID(pokemonName,idPokemon) ,$router.push({ name: 'chat' })"/>
 
               <div class="sprite-control sprite-controls-rotate" @click="rotateImage">
                 <svg xmlns="http://www.w3.org/2000/svg" height="15" width="15" viewBox="0 0 512 512">
@@ -39,7 +39,10 @@
           <router-link :to="'/'" v-if="paginabool">
             <sus style='width: 100%;' :imgBTN="pokemonImg[0]"/>
           </router-link>
-    
+          
+          <!-- <router-link :to="{ name: 'chat' }">
+            <sus style='width: 100%;' :imgBTN="pokemonImg[2]"/>
+          </router-link> -->
     
           <div class="pokemon-description screen">
             {{ description }}
@@ -85,6 +88,7 @@
             </div>
           </div>
         </div>
+        
       </div>
 
 </template>
@@ -93,6 +97,12 @@
 import sus from './elementos/sus.vue';
 import chat_btn from './elementos/chat_btn.vue';
 import { ID_pokemon } from '@/stores/pokemonID';
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
+// const chatPokemon = (){
+
+// }
 
 
 import { ref, onBeforeMount, watch } from 'vue';
@@ -412,6 +422,11 @@ onBeforeMount(async () => {
 </script>
 
 <style scoped>
+
+.S-Chat_btn{
+  width: 35px; 
+  height: 30px;
+}
 
 @media (max-width: 877px) {
   .pokedex {

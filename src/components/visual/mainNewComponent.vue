@@ -25,7 +25,7 @@
             <div v-for="(pokemon, index) in pokemonImg" :key="pokemonID[index]" class="pokemon"
                 :class="getClase(pokemonID[index])" @click="$emit('toggle', pokemonID[index])">
                 <router-link :to="{ name: 'pokedex', params: { id: `${props.componente_actual}-${pokemonID[index]}` } }"
-                    v-on:click="guardarPosicion">
+                    v-on:click="guardarPosicion, ID_pokemon().guardarComponente(`${props.componente_actual}-${pokemonID[index]}`)">
                     <img :src="pokemon" :alt="pokemonName[index]">
                     <p>{{ pokemonName[index] }}</p>
                     <p>{{ pokemonID[index] }}</p>
@@ -37,6 +37,8 @@
 
 <script setup>
 import { ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
+import { ID_pokemon } from '@/stores/pokemonID';
+
 import volver_arriba from '../elementos/volver_arriba.vue';
 import cargando from '../elementos/cargando.vue';
 import boton_inicio from "@/components/elementos/boton_inicio.vue";
