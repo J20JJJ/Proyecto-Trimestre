@@ -2,14 +2,14 @@
     <div :class="{'dark-mode': isDarkMode}" class="container mt-5">
         <div class="card">
             <div class="card-header d-flex justify-content-between">
-                <span>Chat</span>
+                <span ref="chatTitle">Chat</span>
                 <button class="btn btn-secondary" @click="toggleDarkMode">
                     {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
                 </button>
             </div>
             <div class="card-body">
                 <div class="chat-box" ref="chatBox">
-                    <div v-for="(message, index) in messages" :key="index" :class="['message', message.user === 'You' ? 'you' : 'bot']">
+                    <div v-for="(message, index) in messages" :key="index" :class="['message', message.user === 'You' ? 'you' : 'bot']" :ref="el => setMessageRef(el, index)">
                         <span class="user">{{ message.user }}:</span>
                         <span>{{ message.text }}</span>
                     </div>
@@ -24,21 +24,23 @@
     <btn_return @click="$router.push({ name: 'pokedex', params: { id: `${ID_pokemon().getComponente()}` } })"/>
 </template>
 
-
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
+import { gsap } from 'gsap'; // Importar GSAP
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { preguntar, sacarPromt } from '@/stores/gemini_api';
+import { preguntar, sacarPromt, restablecerHistorial } from '@/stores/gemini_api';
 import { getPokemon, guardarPokemon } from '@/bbdd/bbdd';
 import { ID_pokemon } from '@/stores/pokemonID';
 import btn_return from '@/components/elementos/btn_return.vue';
+import { useConversacionesStore } from '@/stores/conversaciones_SAVE';
 
 const promt = ref([]);
 const messages = ref([]);
 const newMessage = ref('');
 const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');
 const chatBox = ref(null);
+const messageRefs = ref([]); // Referencias a los mensajes para animarlos
 
 const toggleDarkMode = () => {
     isDarkMode.value = !isDarkMode.value;
@@ -48,17 +50,40 @@ const toggleDarkMode = () => {
 const sendMessage = async () => {
     if (newMessage.value.trim() !== '') {
         messages.value.push({ user: 'You', text: newMessage.value });
-        const mensage = `${promt.value} empecemos ahora. USER: ${newMessage.value}.`;
-        messages.value.push({ user: ID_pokemon().getID(), text: await preguntar(mensage) });
+        
+        console.log("mensage: ",newMessage.value);
+
+        messages.value.push({ user: ID_pokemon().getID(), text: await preguntar(newMessage.value) });
         newMessage.value = '';
+
+        console.log(JSON.stringify(messages.value, null, 2));
+
+
         await nextTick();
         scrollToBottom();
+        animateLastMessage(); // Animar el último mensaje añadido
     }
 };
 
 const scrollToBottom = () => {
     if (chatBox.value) {
         chatBox.value.scrollTop = chatBox.value.scrollHeight;
+    }
+};
+
+const setMessageRef = (el, index) => {
+    messageRefs.value[index] = el; // Guardar la referencia del mensaje
+};
+
+const animateLastMessage = () => {
+    const lastMessageRef = messageRefs.value[messageRefs.value.length - 1];
+    if (lastMessageRef) {
+        gsap.from(lastMessageRef, {
+            duration: 0.5,
+            opacity: 0,
+            y: 20,
+            ease: 'power2.out',
+        });
     }
 };
 
@@ -79,11 +104,36 @@ const crearPromt = async () => {
     guardarPokemon(pokemonNAME, prompt);
 };
 
+const chatTitle = ref(null);
+
 onMounted(async () => {
     console.log(ID_pokemon().getComponente());
     const estadoBBDD = await buscarPromt();
     if (!estadoBBDD) {
         await crearPromt();
+    }
+
+    // useConversacionesStore().eliminarConversaciones()
+    if(useConversacionesStore().obtenerConversaciones().length < 1){
+        messages.value.push({ user: ID_pokemon().getID(), text: await preguntar(promt.value) });
+    }else{
+        restablecerHistorial();
+    }
+
+    // Recuperar conversaciones
+    // storedMessages.value = await useConversacionesStore().obtenerConversaciones();
+    // console.log("storedMessages: ",storedMessages.value);
+
+
+
+    if (chatTitle.value) {
+        gsap.from(chatTitle.value, {
+            duration: 1.5, // Duración de la animación
+            opacity: 0, // Comienza invisible
+            x: -50, // Desplazamiento horizontal inicial
+            ease: 'power2.out', // Efecto de suavizado
+            delay: 0.5, // Retraso antes de empezar
+        });
     }
 });
 </script>
@@ -147,7 +197,6 @@ onMounted(async () => {
     margin-right: auto;  /* Espacio a la derecha */
 }
 
-
 /* Estilo del campo de entrada */
 .input-group {
     margin-top: 20px;
@@ -201,5 +250,4 @@ onMounted(async () => {
     background-color: #ccc;
     border-radius: 10px;
 }
-
 </style>
