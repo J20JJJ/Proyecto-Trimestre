@@ -29,7 +29,7 @@ import { ref, onMounted, nextTick } from 'vue';
 import { gsap } from 'gsap'; // Importar GSAP
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { preguntar, sacarPromt, restablecerHistorial } from '@/stores/gemini_api';
+import { preguntar, sacarPromt } from '@/stores/gemini_api';
 import { getPokemon, guardarPokemon } from '@/bbdd/bbdd';
 import { ID_pokemon } from '@/stores/pokemonID';
 import btn_return from '@/components/elementos/btn_return.vue';
@@ -55,6 +55,8 @@ const sendMessage = async () => {
 
         messages.value.push({ user: ID_pokemon().getID(), text: await preguntar(newMessage.value) });
         newMessage.value = '';
+
+        useConversacionesStore().añadirConversacion(messages.value);
 
         console.log(JSON.stringify(messages.value, null, 2));
 
@@ -112,13 +114,14 @@ onMounted(async () => {
     if (!estadoBBDD) {
         await crearPromt();
     }
-
+    
+    messages.value.push({ user: ID_pokemon().getID(), text: await preguntar(promt.value) });
     // useConversacionesStore().eliminarConversaciones()
-    if(useConversacionesStore().obtenerConversaciones().length < 1){
-        messages.value.push({ user: ID_pokemon().getID(), text: await preguntar(promt.value) });
-    }else{
-        restablecerHistorial();
-    }
+    // if(useConversacionesStore().obtenerConversaciones().length < 1){
+       
+    // }else{
+    //     restablecerHistorial();
+    // }
 
     // Recuperar conversaciones
     // storedMessages.value = await useConversacionesStore().obtenerConversaciones();
