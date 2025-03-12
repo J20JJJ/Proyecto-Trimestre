@@ -258,56 +258,129 @@ onBeforeMount(async () => {
 </script>
 
 <style scoped>
+/* Contenedor principal */
 .caja_musica {
+  width: 57%;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  gap: 20px;
+  /* background-color: #1a1a1a; */
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* Estilos para el control de volumen */
+.slider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider .volume {
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  transition: color 0.3s ease;
+}
+
+.slider .level {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100px;
+  height: 6px;
+  background: #444;
+  border-radius: 5px;
+  outline: none;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.slider .level:hover {
+  opacity: 1;
+}
+
+.slider .level::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #1db954;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider .level::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #1db954;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Estilos para el reproductor de música */
 .music-player {
   width: 350px;
-  
   background-color: #121212;
-  border-radius: 10px;
+  border-radius: 15px;
   padding: 20px;
   color: #fff;
   font-family: 'Arial', sans-serif;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Información de la canción */
 .track-info {
   text-align: center;
   margin-bottom: 20px;
 }
 
 .track-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   color: #f1f1f1;
+  margin: 0;
 }
 
+/* Controles de reproducción */
 .controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  margin-left: -10px;
 }
 
 .btn {
   background-color: #1db954;
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 50%;
+  padding: 8px;
+  margin: 5px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  font-size: 18px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn:hover {
   background-color: #1ed760;
+  transform: scale(1.1);
 }
 
+.btn:active {
+  transform: scale(0.95);
+}
+
+/* Barra de progreso */
 .progress-bar {
   width: 100%;
-  height: 10px;
+  height: 6px;
   background-color: #333;
   border-radius: 5px;
   overflow: hidden;
@@ -318,92 +391,6 @@ onBeforeMount(async () => {
   width: 0%;
   background-color: #1db954;
   border-radius: 5px;
-  transition: width 0.3s;
-}
-
-/* level settings 👇 */
-
-.slider {
-  /* slider */
-  --slider-width: 100%;
-  --slider-height: 15px;
-  --slider-bg: rgba(82, 82, 82, 0.322);
-  --slider-border-radius: 5px;
-  /* level */
-  --level-color: #92ff77;
-  --level-transition-duration: 5s;
-  /* icon */
-  --icon-margin: 15px;
-  --icon-color: var(--slider-bg);
-  --icon-size: 30px;
-}
-
-.slider {
-  position: relative;
-  cursor: pointer;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: reverse;
-  -ms-flex-direction: row-reverse;
-  flex-direction: row-reverse;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.slider .volume {
-  display: inline-block;
-  vertical-align: top;
-  margin-right: var(--icon-margin);
-  color: var(--icon-color);
-  width: var(--icon-size);
-  height: auto;
-  position: absolute;
-  left: 18px;
-  pointer-events: none;
-  transition-duration: 0.5s;
-}
-
-.slider .level {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  width: var(--slider-width);
-  height: var(--slider-height);
-  background: var(--slider-bg);
-  overflow: hidden;
-  border-radius: var(--slider-border-radius);
-  -webkit-transition: height var(--level-transition-duration);
-  -o-transition: height var(--level-transition-duration);
-  transition: height var(--level-transition-duration);
-  cursor: inherit;
-  transform: rotate(270deg);
-}
-
-.slider .level::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 0px;
-  height: 0px;
-  -webkit-box-shadow: -200px 0 0 200px var(--level-color);
-  box-shadow:
-    -100px 0 5px 100px var(--level-color),
-    -100px 0px 20px 100px var(--level-color);
-}
-
-.slider .level:hover~.volume {
-  color: var(--level-color);
-  opacity: 0.6;
-}
-
-.slider .level::-moz-range-thumb {
-  width: 0;
-  height: 0;
-  border-radius: 0;
-  border: none;
-  box-shadow:
-    -100px 0 5px 100px var(--level-color),
-    -100px 0px 20px 100px var(--level-color);
+  transition: width 0.1s linear;
 }
 </style>

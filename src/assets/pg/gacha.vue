@@ -50,8 +50,8 @@
 
 
 
-      <div class="text-center mb-4" v-if="!verResultado">
-        <img src="../img/pokeballCarga1.gif" alt="Cargando..." class="img-fluid" />
+      <div class="d-flex justify-content-center align-items-center" v-if="!verResultado">
+        <img src="../img/pokeballCarga1.gif" alt="Cargando..." class="img-fluid" style="height: 200px;"/>
       </div>
 
       <div v-if="tirarGacha" class="mb-4">
@@ -78,20 +78,30 @@
 
       <div v-if="!tirarGacha && verResultado" class="text-center">
         <div v-if="verContenido">
-          <p class="h4 fw-bold text-uppercase text-primary text-shadow">{{ pokemonID }}</p>
-          <img :src="pokemonImg" alt="Imagen del Pokémon" class="img-fluid mb-3" />
-          <p class="h4 fw-bold text-uppercase text-primary text-shadow">{{ pokemonName }}</p>
-          <p class="h6 fw-bold text-uppercase text-primary text-shadow">Probabilidad de captura: {{ capture_rate }}%</p>
-        </div>
+          <p class="h1 text-stroke fw-bold text-uppercase text-white text-shadow bg-primary" style="width: 20%; margin-left: 40%;">{{ pokemonID }}</p>
+          
+          <!-- Contenedor para centrar la imagen -->
+          <div class="d-flex justify-content-center align-items-center">
+            <img :src="pokemonImg" alt="Imagen del Pokémon" class="img-fluid mb-3" />
+          </div>
 
-        <div class="mt-4">
-          <boton_GO @click="tirar" v-if="!tirarGacha && verResultado" />
         </div>
+        <div class="overlay-text">
 
-        <!-- Texto superpuesto al fondo -->
-        <div class="overlay-text"
-          v-if="regiones[regionesNUM] !== 'NULL' && regionesNUM < regiones.length && regionesNUM >= 1">
-          Probabilidad de {{ regiones[regionesNUM] }} incrementada
+          <div class="">
+            <p class="h4 fw-bold text-uppercase text-white text-shadow">{{ pokemonName }}</p>
+            <p class="h6 fw-bold text-uppercase text-white text-shadow">Probabilidad de captura: {{ capture_rate }}%</p>
+          </div>
+  
+          <div class="mt-4">
+            <boton_GO @click="tirar" v-if="!tirarGacha && verResultado" />
+          </div>
+  
+          <!-- Texto superpuesto al fondo -->
+          <div class=""
+            v-if="regiones[regionesNUM] !== 'NULL' && regionesNUM < regiones.length && regionesNUM >= 1">
+            Probabilidad de {{ regiones[regionesNUM] }} incrementada
+          </div>
         </div>
 
       </div>
@@ -455,6 +465,12 @@ function verRegion() {
 .img-Unova {
   background-image: url('../img/portadas_gacha/Unova.jpg');
 }
+
+.black-bg {
+    background-color: black;
+    padding: 10px;
+    border-radius: 5px;
+  }
 
 .fondo_gacha {
   height: 82vh;

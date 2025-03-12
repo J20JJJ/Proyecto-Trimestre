@@ -1,6 +1,9 @@
 <style scoped>
   button {
+    background-color: aliceblue;
+    color: black;
     position: relative;
+    text-align: center;
     width: 150px;
     height: 60px;
     overflow: hidden;
