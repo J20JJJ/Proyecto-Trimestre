@@ -53,6 +53,10 @@ const sendMessage = async () => {
         
         console.log("mensage: ",newMessage.value);
 
+        await nextTick();
+        scrollToBottom();
+        animateLastMessage();
+
         messages.value.push({ user: ID_pokemon().getID(), text: await preguntar(newMessage.value) });
         newMessage.value = '';
 
@@ -63,7 +67,7 @@ const sendMessage = async () => {
 
         await nextTick();
         scrollToBottom();
-        animateLastMessage(); // Animar el último mensaje añadido
+        animateLastMessage();
     }
 };
 
@@ -109,6 +113,7 @@ const crearPromt = async () => {
 const chatTitle = ref(null);
 
 onMounted(async () => {
+    useConversacionesStore().eliminarConversaciones();
     console.log(ID_pokemon().getComponente());
     const estadoBBDD = await buscarPromt();
     if (!estadoBBDD) {
