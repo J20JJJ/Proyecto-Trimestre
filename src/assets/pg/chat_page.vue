@@ -118,6 +118,7 @@ onMounted(async () => {
     const estadoBBDD = await buscarPromt();
     if (!estadoBBDD) {
         await crearPromt();
+        useConversacionesStore().eliminarConversaciones();
     }
     
     messages.value.push({ user: ID_pokemon().getID(), text: await preguntar(promt.value) });
