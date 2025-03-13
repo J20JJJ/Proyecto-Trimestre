@@ -78,7 +78,7 @@
 
       <div v-if="!tirarGacha && verResultado" class="text-center">
         <div v-if="verContenido">
-          <p class="h1 text-stroke fw-bold text-uppercase text-white text-shadow bg-primary" style="width: 20%; margin-left: 40%;">{{ pokemonID }}</p>
+          <p class="h1 text-stroke fw-bold text-uppercase text-white text-shadow bg-primary border-1 rounded" style="width: 20%; margin-left: 40%;">{{ pokemonID }}</p>
           
           <!-- Contenedor para centrar la imagen -->
           <div class="d-flex justify-content-center align-items-center">
@@ -88,9 +88,11 @@
         </div>
         <div class="overlay-text">
 
-          <div class="">
+          <div v-if="verContenido">
             <p class="h4 fw-bold text-uppercase text-white text-shadow">{{ pokemonName }}</p>
-            <p class="h6 fw-bold text-uppercase text-white text-shadow">Probabilidad de captura: {{ capture_rate }}%</p>
+            <p class="h6 fw-bold text-uppercase text-white text-shadow" :title="capture_rate ? capture_rate.toFixed(8) + '%' : '???%'">
+              Probabilidad de captura: {{ capture_rate ? capture_rate.toFixed(2) : '???' }}%
+            </p>
           </div>
   
           <div class="mt-4">
@@ -229,7 +231,13 @@ async function tirarRuleta() {
   let regionEVENTO = regiones.value[regionesNUM.value];
   // console.log("gato génesis de CryptoKitties", regionEVENTO)
 
-  while (true) {
+
+  
+
+    // Generamos un número aleatorio entre 1 y 807
+    let max = Math.floor(Math.random() * 25) + 5;
+    // console.log("max: ", max);
+  for (let i = 0; i < max; i++) {
     index = Math.floor(Math.random() * 1025);
     // console.log("index: ", index);
 
@@ -275,7 +283,7 @@ async function tirarRuleta() {
           // console.log("GANAS!!!");
           pokemonsEscapados.push(index);
 
-          getPokemonEscapados(pokemonsEscapados, index);
+          
           break;
         } else {
           pokemonsEscapados.push(index);
@@ -285,9 +293,10 @@ async function tirarRuleta() {
       // console.error(error);
     }
   }
-
+  getPokemonEscapados(pokemonsEscapados, index);
   // console.log("Sales!!!");
   let idWin = index;
+  // console.log("idWin: ", idWin);
   return {
     idWin,
     porcentaje,

@@ -260,7 +260,7 @@ onBeforeMount(async () => {
 <style scoped>
 /* Contenedor principal */
 .caja_musica {
-  width: 57%;
+  /* width: 57%; */
   display: flex;
   align-items: center;
   justify-content: center;
