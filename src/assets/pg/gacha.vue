@@ -152,23 +152,19 @@ const actualizarCookies = (idWin) => {
     const savedPokemons = Cookies.get("misPokemons");
     if (savedPokemons) {
       misPokemons.value = JSON.parse(savedPokemons);
-      misPokemons.value.push(idWin);
+    }
+    misPokemons.value.push(idWin);
 
-      if (misPokemons.value.includes(idWin)) {
-        dinero.value += 20;
-      }
-    } else {
-      misPokemons.value.push(idWin);
+    if (misPokemons.value.includes(idWin)) {
+      dinero.value += 20;
     }
 
   } else {
     let dinero1 = parseInt(Cookies.get("dinero"), 10);
-    // console.log("dinero1dinero1dinero1: ", dinero1)
-    if(dinero1>0){
-      // console.log("dinero1dinero1dinero3: ", dinero1)
+    if (dinero1 > 0) {
       dinero.value = dinero1;
     }
-   }
+  }
 
   misPokemons.value = [...new Set(misPokemons.value)].sort((a, b) => a - b);
   Cookies.set("misPokemons", JSON.stringify(misPokemons.value), {
@@ -176,8 +172,6 @@ const actualizarCookies = (idWin) => {
   });
 
   Cookies.set("dinero", dinero.value, { expires: 36500 });
-
-  // console.log("Cookies actualizadas");
 };
 
 function buscarLocalizaciones(pokemonId, regionBuscada) {
@@ -409,7 +403,16 @@ function handleModalClose() {
 }
 
 onMounted(() => {
-  // Añadir el listener al evento hidden.bs.modal
+  const savedPokemons = Cookies.get("misPokemons");
+  if (savedPokemons) {
+    misPokemons.value = JSON.parse(savedPokemons);
+  }
+
+  const savedDinero = Cookies.get("dinero");
+  if (savedDinero) {
+    dinero.value = parseInt(savedDinero, 10);
+  }
+
   const modalElement = document.getElementById('exampleModal');
   modalElement?.addEventListener('hidden.bs.modal', handleModalClose);
 });
