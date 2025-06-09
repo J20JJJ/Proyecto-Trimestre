@@ -230,7 +230,7 @@ function playAudio(index) {
 
 onBeforeMount(async () => {
   try {
-    let apiKey = "I0ZjfHJKqlg0PMs3cYXHgAQLWIPRiVDIl929rYrU";
+    let apiKey = "Your API Key";
     let idCancion = "467497";
     const cancionesSimilar = await buscarCancionesSimilar(idCancion, apiKey);
     if (cancionesSimilar) {
