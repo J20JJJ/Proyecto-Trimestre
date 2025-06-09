@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyAp0V7P3-RZ3tuAviLNFbsHb-q6uPHiGxg";
+const API_KEY = "Your API key";
 const URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
 // Array para almacenar el historial de la conversación
