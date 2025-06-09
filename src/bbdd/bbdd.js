@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js'; // Asegúrate de importar correctamente
 
 const supabase = createClient(
-  'https://tnnocxzpsgmnkmhuxuow.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRubm9jeHpwc2dtbmttaHV4dW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwOTAwOTEsImV4cCI6MjA1MzY2NjA5MX0._DTMlAQ2ZI9FbevSHZqjKw8BIWuEWMsOABlY33Lotdo'
+  'Your SupaBase URL',
+  'Your SupaBase Key'
 );
 
 // Función para guardar un nuevo usuario
