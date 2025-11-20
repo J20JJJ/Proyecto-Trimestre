@@ -1,9 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import HomePage from './assets/pg/HomePage.vue';
 import pokedex from './components/pokedex.vue';
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHashHistory(), // 👈 Cambiado
     routes: [
         {
             path: '/',
