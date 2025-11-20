@@ -1,4 +1,4 @@
-name: Deploy VUE.JS to Server
+name: Deploy Vue Vite Project
 
 on:
   push:
@@ -9,17 +9,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout del repositorio
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ------------------------------------
-      # PASOS ESPECÍFICOS PARA APLICACIONES VUE/NODE.JS
-      # ------------------------------------
+      # 2. Configuración de Node.js
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
+      # 3. Cache de dependencias para acelerar builds
       - name: Cache Node.js modules
         uses: actions/cache@v4
         with:
@@ -28,18 +28,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # 4. Instalación de dependencias
       - name: Install dependencies
         run: npm install
 
-      - name: Build Vue Project (Genera la carpeta 'dist')
+      # 5. Compilación del proyecto Vite/Vue
+      - name: Build Vue Project
         run: npm run build
 
+      # 6. Verificación de carpeta dist
       - name: Verify dist folder
         run: test -d dist
 
-      # ------------------------------------
-      # CONFIGURACIÓN Y DESPLIEGUE
-      # ------------------------------------
+      # 7. Configuración de SSH
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -48,13 +49,14 @@ jobs:
           echo -e "Host *\n  StrictHostKeyChecking no\n  IdentitiesOnly yes" > ~/.ssh/config
           chmod 600 ~/.ssh/config
 
+      # 8. Despliegue vía SCP
       - name: Deploy compiled files via SCP
         run: |
-          # 1. Limpia el contenido del directorio remoto
+          # Limpia el contenido remoto
           ssh -i ~/.ssh/id_ed25519 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm -rf /var/www/alumnos/${{ secrets.USERNAME }}/*"
           
-          # 2. Copia el contenido de 'dist/' con logs detallados
+          # Copia TODO el contenido de dist/
           scp -rv ./dist/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/var/www/alumnos/${{ secrets.USERNAME }}/
           
-          # 3. Ajusta permisos en destino (opcional)
+          # Ajusta permisos en destino
           ssh -i ~/.ssh/id_ed25519 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "chmod -R 755 /var/www/alumnos/${{ secrets.USERNAME }}"
