@@ -1,62 +1,41 @@
-name: Deploy Vue Vite Project
+name: Build and deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+
+concurrency:
+  group: 'deploy-pages'
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout del repositorio
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      # 2. Configuración de Node.js
-      - name: Setup Node.js Environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
 
-      # 3. Cache de dependencias para acelerar builds
-      - name: Cache Node.js modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+    - name: Install dependencies
+      run: npm ci
 
-      # 4. Instalación de dependencias
-      - name: Install dependencies
-        run: npm install
+    - name: Build
+      run: npm run build --if-present
 
-      # 5. Compilación del proyecto Vite/Vue
-      - name: Build Vue Project
-        run: npm run build
+    - name: Upload artifact for GitHub Pages
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: ./dist
 
-      # 6. Verificación de carpeta dist
-      - name: Verify dist folder
-        run: test -d dist
-
-      # 7. Configuración de SSH
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          echo -e "Host *\n  StrictHostKeyChecking no\n  IdentitiesOnly yes" > ~/.ssh/config
-          chmod 600 ~/.ssh/config
-
-      # 8. Despliegue vía SCP
-      - name: Deploy compiled files via SCP
-        run: |
-          # Limpia el contenido remoto
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm -rf /var/www/alumnos/${{ secrets.USERNAME }}/*"
-          
-          # Copia TODO el contenido de dist/
-          scp -rv ./dist/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/var/www/alumnos/${{ secrets.USERNAME }}/
-          
-          # Ajusta permisos en destino
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "chmod -R 755 /var/www/alumnos/${{ secrets.USERNAME }}"
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v1
