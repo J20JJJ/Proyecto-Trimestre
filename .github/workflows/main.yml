@@ -1,0 +1,49 @@
+name: Deploy VUE.JS to Server # Nombre actualizado
+
+on:
+  push:
+    branches: ["main", "master"]
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------
+      # PASOS ESPECÍFICOS PARA APLICACIONES VUE/NODE.JS
+      # ------------------------------------
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # <<< AJUSTA ESTA VERSIÓN SI ES NECESARIO
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Vue Project (Genera la carpeta 'dist')
+        run: npm run build # <<< VERIFICA que tu script de compilación se llame 'build'
+
+      # ------------------------------------
+      # CONFIGURACIÓN Y DESPLIEGUE (Modificado para usar 'dist')
+      # ------------------------------------
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          # Uso de tr -d '\r' para limpiar saltos de línea de Windows/macOS en el secreto
+          echo "${{ secrets.SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo -e "Host *\n  StrictHostKeyChecking no\n  IdentitiesOnly yes" > ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      - name: Deploy compiled files via SCP
+        run: |
+          # 1. Limpia el contenido del directorio remoto.
+          # Esto evita errores de permisos al intentar sobrescribir archivos antiguos o directorios como .git
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm -rf /var/www/alumnos/${{ secrets.USERNAME }}/*"
+          
+          # 2. Copia SOLAMENTE el contenido de la carpeta 'dist/' al destino.
+          # -r ./dist/* copia de forma recursiva todo DENTRO de 'dist'.
+          scp -r ./dist/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/var/www/alumnos/${{ secrets.USERNAME }}/
