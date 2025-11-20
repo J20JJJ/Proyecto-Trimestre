@@ -21,17 +21,15 @@
                 <span>shiny</span>
               </div>
 
-              <Chat_btn 
+<Chat_btn 
   class="S-Chat_btn" 
   @click="() => {
-      ID_pokemon().guardarPokemon({
-          id: idPokemon.value,
-          name: pokemonName.value,
-          img: pokemonImg.value[0]
-      });
-      router.push({ name: 'chat' });
+    ID_pokemon().guardarID(pokemonName.value);
+    router.push({ name: 'chat' });
   }"
 />
+
+
 
 
               <div class="sprite-control sprite-controls-rotate" @click="rotateImage">
