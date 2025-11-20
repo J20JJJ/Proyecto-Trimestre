@@ -21,7 +21,15 @@
             </div>
         </div>
     </div>
-    <btn_return @click="$router.push({ name: 'pokedex', params: { id: `${ID_pokemon().getComponente()}` } })"/>
+    <btn_return 
+  @click="() => {
+      const p = ID_pokemon().pokemon;
+      if(p?.id){
+          router.push({ name: 'pokedex', params: { id: `HomePage-${p.id}` } });
+      }
+  }"
+/>
+
 </template>
 
 <script setup>

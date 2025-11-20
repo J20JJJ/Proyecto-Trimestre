@@ -21,10 +21,16 @@
                 <span>shiny</span>
               </div>
 
-              <!-- <Chat_btn class="S-Chat_btn" @click="ID_pokemon().guardarID(pokemonName,idPokemon) ,$router.push({ name: 'chat' })"/> -->
-               <Chat_btn 
+              <Chat_btn 
   class="S-Chat_btn" 
-  @click="ID_pokemon().guardarID(pokemonName,idPokemon); router.push({ name: 'chat' })"
+  @click="() => {
+      ID_pokemon().guardarPokemon({
+          id: idPokemon.value,
+          name: pokemonName.value,
+          img: pokemonImg.value[0]
+      });
+      router.push({ name: 'chat' });
+  }"
 />
 
 
