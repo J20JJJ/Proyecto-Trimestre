@@ -22,12 +22,14 @@
               </div>
 
 <Chat_btn 
-  class="S-Chat_btn" 
+  class="S-Chat_btn"
   @click="() => {
-    ID_pokemon().guardarID(pokemonName.value);
+    const idStore = ID_pokemon();
+    idStore.guardarID(pokemonName.value + '-' + idPokemon.value);
     router.push({ name: 'chat' });
   }"
 />
+
 
 
 
