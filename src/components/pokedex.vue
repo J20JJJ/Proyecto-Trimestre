@@ -23,12 +23,9 @@
 
 <Chat_btn 
   class="S-Chat_btn"
-  @click="() => {
-    const idStore = ID_pokemon();
-    idStore.guardarID(pokemonName.value + '-' + idPokemon.value);
-    router.push({ name: 'chat' });
-  }"
+  @click="irAlChat"
 />
+
 
 
 
@@ -115,9 +112,26 @@ const router = useRouter();
 // }
 
 
+
+
 import { ref, onBeforeMount, watch } from 'vue';
 
 const currentImageIndex = ref(0);
+
+
+// Función para ir al chat
+const irAlChat = () => {
+  const idStore = ID_pokemon(); // Llamada correcta a la store
+  idStore.guardarPokemon({
+    id: idPokemon.value,
+    name: pokemonName.value,
+    img: pokemonImg[0] // o la que quieras guardar
+  });
+
+  router.push({ name: 'chat' });
+};
+
+
 
 function rotateImage() {
   switch (currentImageIndex.value) {

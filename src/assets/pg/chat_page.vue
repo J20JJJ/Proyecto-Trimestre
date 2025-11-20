@@ -33,6 +33,8 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+const router = useRouter();
 import { ref, onMounted, nextTick } from 'vue';
 import { gsap } from 'gsap'; // Importar GSAP
 import 'bootstrap/dist/css/bootstrap.min.css';

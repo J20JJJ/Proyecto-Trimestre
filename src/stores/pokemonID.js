@@ -7,16 +7,26 @@ export const ID_pokemon = defineStore('ID_pokemon', () => {
         JSON.parse(localStorage.getItem('pokemon_selected')) || null
     );
 
-    // ID_pokemon.js
+    // Guardar Pokémon
     const guardarPokemon = (data) => {
         pokemon.value = data;  // data = { id, name, img }
         localStorage.setItem('pokemon_selected', JSON.stringify(data));
     };
 
-
+    // Eliminar Pokémon
     const removePokemon = () => {
         pokemon.value = null;
         localStorage.removeItem('pokemon_selected');
+    };
+
+    // Función para obtener el ID (simula lo que usa chat)
+    const getID = () => {
+        return pokemon.value?.name || 'unknown';
+    };
+
+    // Función para obtener un "componente" (simulación para que no tire error)
+    const getComponente = () => {
+        return pokemon.value || {};
     };
 
     watch(pokemon, (newVal) => {
@@ -27,5 +37,5 @@ export const ID_pokemon = defineStore('ID_pokemon', () => {
         }
     }, { deep: true });
 
-    return { pokemon, guardarPokemon, removePokemon };
+    return { pokemon, guardarPokemon, removePokemon, getID, getComponente };
 });
