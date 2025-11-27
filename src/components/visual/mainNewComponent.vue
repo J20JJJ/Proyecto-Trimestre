@@ -25,7 +25,8 @@
             <div v-for="(pokemon, index) in pokemonImg" :key="pokemonID[index]" class="pokemon"
                 :class="getClase(pokemonID[index])" @click="$emit('toggle', pokemonID[index])">
                 <router-link :to="{ name: 'pokedex', params: { id: `${props.componente_actual}-${pokemonID[index]}` } }"
-                    v-on:click="guardarPosicion, ID_pokemon().guardarComponente(`${props.componente_actual}-${pokemonID[index]}`)">
+                    v-on:click="() => { guardarPosicion(); ID_pokemon().guardarComponente(`${props.componente_actual}-${pokemonID[index]}`) }">
+
                     <img :src="pokemon" :alt="pokemonName[index]">
                     <p>{{ pokemonName[index] }}</p>
                     <p>{{ pokemonID[index] }}</p>
@@ -100,10 +101,13 @@ function getClase(pokemon) {
 const scrollPosicion = ref(0);
 
 const guardarPosicion = () => {
-    scrollPosicion.value = window.scrollY; // Guardamos la posición actual del scroll
-    localStorage.setItem('posicionScroll', scrollPosicion.value); // Guardamos la posición en localStorage
-    // console.log('Posición guardada:', scrollPosicion.value);
+  scrollPosicion.value = window.scrollY;
+  localStorage.setItem('posicionScroll', scrollPosicion.value);
 };
+
+// Exponer para que los tests puedan espiarlo
+defineExpose({ guardarPosicion });
+
 
 const cargarPosicion = () => {
 

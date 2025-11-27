@@ -108,5 +108,10 @@ defineProps({
     required: true
   }
 });
+
+defineOptions({
+  name: 'BotonInicio'
+});
 </script>
+
 
