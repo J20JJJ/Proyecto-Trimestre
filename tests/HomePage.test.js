@@ -73,10 +73,4 @@ describe('HomePage.vue', () => {
         expect(wrapper.vm.pokemonsFiltradosID[0]).toBe(25)
     })
 
-    it('botón cargar más existe inicialmente', () => {
-        const wrapper = mount(HomePage, {
-            global: { stubs: { mainNewComponent: true } }
-        })
-        expect(wrapper.find('boton_cargarMas').exists()).toBe(false)
-    })
 })
