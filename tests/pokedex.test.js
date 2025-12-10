@@ -2,19 +2,13 @@ import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import pokedex from '@/components/pokedex.vue'
 
-// ✅ Mock SUS.vue corregido: acepta String Y Object
+// ✅ Mock SUS.vue corregido
 vi.mock('@/components/elementos/sus.vue', () => ({
   default: {
     name: 'Sus',
     props: {
-      imgBTN: {
-        type: String,
-        default: ''
-      },
-      style: {
-        type: [String, Object],  // ✅ FIX: acepta ambos tipos
-        default: ''
-      }
+      imgBTN: { type: String, default: '' },
+      style: { type: [String, Object], default: '' }
     },
     template: '<div class="sus-mock"><slot /></div>',
     setup(props) {
@@ -36,11 +30,9 @@ vi.mock('@/stores/pokemonID', () => ({
   ID_pokemon: () => ({ guardarPokemon: vi.fn() })
 }))
 
-// ✅ Fetch mock POR URL (NO por contador) - FIX principal
+// ✅ Fetch mock COMPLETO - incluye evolution_url como ARRAY
 global.fetch = vi.fn((url) => {
-  console.log('🔍 Mock fetch llamado para:', url) // Debug opcional
-  
-  // Primera llamada: pokemon/1 (sprites, types, etc)
+  // Pokemon principal
   if (url.includes('/pokemon/') && !url.includes('species')) {
     return Promise.resolve({
       ok: true,
@@ -65,7 +57,7 @@ global.fetch = vi.fn((url) => {
     })
   }
   
-  // Segunda llamada: pokemon-species/25
+  // Pokemon-species
   if (url.includes('/pokemon-species/')) {
     return Promise.resolve({
       ok: true,
@@ -81,17 +73,34 @@ global.fetch = vi.fn((url) => {
     })
   }
   
-  // Tercera llamada: evolution-chain/10
+  // Evolution-chain
   if (url.includes('/evolution-chain/')) {
     return Promise.resolve({
       ok: true,
       json: () => Promise.resolve({ 
-        chain: { species: { name: 'pikachu' } } 
+        chain: { 
+          species: { name: 'pikachu' },
+          evolves_to: [] // ✅ Array vacío para no fallar
+        } 
       })
     })
   }
   
-  // Fallback para cualquier otra llamada
+  // ✅ CRÍTICO: Mock para pokemon/25 (evoluciones)
+  if (url.includes('/pokemon/25')) {
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({
+        id: 25,
+        name: 'pikachu',
+        sprites: {
+          front_default: 'pikachu-front.png'
+        }
+      })
+    })
+  }
+  
+  // Fallback
   return Promise.resolve({
     ok: true,
     json: () => Promise.resolve({})
@@ -99,15 +108,23 @@ global.fetch = vi.fn((url) => {
 })
 
 describe('pokedex.vue', () => {
-  const mountComponent = () => mount(pokedex, {
-    props: { id: 1 },
-    global: {
-      stubs: {
-        'router-link': { template: '<a><slot /></a>' },
-        Chat_btn: { template: '<button class="S-Chat_btn" />' }
+  const mountComponent = async () => {
+    const wrapper = mount(pokedex, {
+      props: { id: 1 },
+      global: {
+        stubs: {
+          'router-link': { template: '<a><slot /></a>' },
+          Chat_btn: { template: '<button class="S-Chat_btn" />' },
+          // ✅ Stub para evitar gacha.vue
+          gacha: { template: '<div></div>' }
+        }
       }
-    }
-  })
+    })
+    
+    // ✅ Espera las llamadas async del componente
+    await wrapper.vm.$nextTick()
+    return wrapper
+  }
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -117,49 +134,49 @@ describe('pokedex.vue', () => {
     vi.restoreAllMocks()
   })
 
-  it('se monta y muestra el contenedor principal', () => {
-    const wrapper = mountComponent()
+  it('se monta y muestra el contenedor principal', async () => {
+    const wrapper = await mountComponent()
     expect(wrapper.find('.pokedex').exists()).toBe(true)
   })
 
-  it('rotateImage cambia el índice de 0 a 4 correctamente', () => {
-    const wrapper = mountComponent()
+  it('rotateImage cambia el índice de 0 a 4 correctamente', async () => {
+    const wrapper = await mountComponent()
     wrapper.vm.currentImageIndex = 0
     wrapper.vm.rotateImage()
     expect(wrapper.vm.currentImageIndex).toBe(4)
   })
 
-  it('rotateImage cambia de 4 a 0 correctamente', () => {
-    const wrapper = mountComponent()
+  it('rotateImage cambia de 4 a 0 correctamente', async () => {
+    const wrapper = await mountComponent()
     wrapper.vm.currentImageIndex = 4
     wrapper.vm.rotateImage()
     expect(wrapper.vm.currentImageIndex).toBe(0)
   })
 
-  it('changeToShiny cambia de normal (0) a shiny (2)', () => {
-    const wrapper = mountComponent()
+  it('changeToShiny cambia de normal (0) a shiny (2)', async () => {
+    const wrapper = await mountComponent()
     wrapper.vm.currentImageIndex = 0
     wrapper.vm.changeToShiny()
     expect(wrapper.vm.currentImageIndex).toBe(2)
   })
 
-  it('changeToShiny cambia de shiny (2) a normal (0)', () => {
-    const wrapper = mountComponent()
+  it('changeToShiny cambia de shiny (2) a normal (0)', async () => {
+    const wrapper = await mountComponent()
     wrapper.vm.currentImageIndex = 2
     wrapper.vm.changeToShiny()
     expect(wrapper.vm.currentImageIndex).toBe(0)
   })
 
-  it('changeToGender cambia de 0 a 1 si pokemonImg[1] existe', () => {
-    const wrapper = mountComponent()
+  it('changeToGender cambia de 0 a 1 si pokemonImg[1] existe', async () => {
+    const wrapper = await mountComponent()
     wrapper.vm.pokemonImg = ['img0', 'img1', 'img2']
     wrapper.vm.currentImageIndex = 0
     wrapper.vm.changeToGender()
     expect(wrapper.vm.currentImageIndex).toBe(1)
   })
 
-  it('changeToGender NO cambia si pokemonImg[1] está vacío', () => {
-    const wrapper = mountComponent()
+  it('changeToGender NO cambia si pokemonImg[1] está vacío', async () => {
+    const wrapper = await mountComponent()
     wrapper.vm.pokemonImg = ['img0', '', 'img2']
     const initialIndex = wrapper.vm.currentImageIndex
     wrapper.vm.changeToGender()
@@ -167,26 +184,26 @@ describe('pokedex.vue', () => {
   })
 
   it('el botón de rotación existe y llama a rotateImage al hacer clic', async () => {
-    const wrapper = mountComponent()
+    const wrapper = await mountComponent()
     await wrapper.find('.sprite-controls-rotate').trigger('click')
     expect(wrapper.vm.currentImageIndex).toBe(4)
   })
 
   it('el botón shiny existe y llama a changeToShiny al hacer clic', async () => {
-    const wrapper = mountComponent()
+    const wrapper = await mountComponent()
     await wrapper.find('.sprite-controls-shiny').trigger('click')
     expect(wrapper.vm.currentImageIndex).toBe(2)
   })
 
   it('el botón de género existe y llama a changeToGender al hacer clic', async () => {
-    const wrapper = mountComponent()
+    const wrapper = await mountComponent()
     wrapper.vm.pokemonImg = ['img0', 'img1', 'img2']
     await wrapper.find('.sprite-controls-gender').trigger('click')
     expect(wrapper.vm.currentImageIndex).toBe(1)
   })
 
   it('Chat_btn existe', async () => {
-    const wrapper = mountComponent()
+    const wrapper = await mountComponent()
     expect(wrapper.find('.S-Chat_btn').exists()).toBe(true)
   })
 })
