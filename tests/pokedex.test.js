@@ -1,14 +1,20 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest'
 import pokedex from '@/components/pokedex.vue'
 
-// ✅ Mock SUS.vue corregido
+// ✅ Mock SUS.vue - acepta String y Object
 vi.mock('@/components/elementos/sus.vue', () => ({
   default: {
     name: 'Sus',
     props: {
-      imgBTN: { type: String, default: '' },
-      style: { type: [String, Object], default: '' }
+      imgBTN: {
+        type: String,
+        default: ''
+      },
+      style: {
+        type: [String, Object],  // ✅ FIX: Acepta ambos tipos
+        default: ''
+      }
     },
     template: '<div class="sus-mock"><slot /></div>',
     setup(props) {
@@ -30,9 +36,11 @@ vi.mock('@/stores/pokemonID', () => ({
   ID_pokemon: () => ({ guardarPokemon: vi.fn() })
 }))
 
-// ✅ Fetch mock COMPLETO - incluye evolution_url como ARRAY
-global.fetch = vi.fn((url) => {
-  // Pokemon principal
+// ✅ Fetch mock COMPLETO por URL - NUNCA falla
+const mockFetch = vi.fn((url) => {
+  console.log('🔍 Mock fetch:', url) // Debug opcional
+  
+  // 1. Pokemon principal: /pokemon/1
   if (url.includes('/pokemon/') && !url.includes('species')) {
     return Promise.resolve({
       ok: true,
@@ -57,7 +65,7 @@ global.fetch = vi.fn((url) => {
     })
   }
   
-  // Pokemon-species
+  // 2. Pokemon-species: /pokemon-species/25
   if (url.includes('/pokemon-species/')) {
     return Promise.resolve({
       ok: true,
@@ -73,38 +81,48 @@ global.fetch = vi.fn((url) => {
     })
   }
   
-  // Evolution-chain
+  // 3. Evolution-chain: /evolution-chain/10
   if (url.includes('/evolution-chain/')) {
     return Promise.resolve({
       ok: true,
       json: () => Promise.resolve({ 
         chain: { 
           species: { name: 'pikachu' },
-          evolves_to: [] // ✅ Array vacío para no fallar
+          evolves_to: [] // ✅ Array vacío
         } 
       })
     })
   }
   
-  // ✅ CRÍTICO: Mock para pokemon/25 (evoluciones)
+  // 4. Evoluciones adicionales: /pokemon/25
   if (url.includes('/pokemon/25')) {
     return Promise.resolve({
       ok: true,
       json: () => Promise.resolve({
         id: 25,
         name: 'pikachu',
-        sprites: {
-          front_default: 'pikachu-front.png'
-        }
+        sprites: { front_default: 'pikachu-front.png' }
       })
     })
   }
   
-  // Fallback
+  // ✅ Fallback para TODO lo demás
   return Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({})
+    json: () => Promise.resolve({
+      evolution_url: [] // ✅ Array vacío para .map() en línea 405
+    })
   })
+})
+
+// ✅ Configuración global de mocks
+beforeAll(() => {
+  global.fetch = mockFetch
+  vi.useFakeTimers() // ✅ Evita setTimeout de gacha.vue
+})
+
+afterAll(() => {
+  vi.useRealTimers()
 })
 
 describe('pokedex.vue', () => {
@@ -115,14 +133,16 @@ describe('pokedex.vue', () => {
         stubs: {
           'router-link': { template: '<a><slot /></a>' },
           Chat_btn: { template: '<button class="S-Chat_btn" />' },
-          // ✅ Stub para evitar gacha.vue
-          gacha: { template: '<div></div>' }
+          // ✅ Stubs defensivos
+          gacha: false,
+          '*': true // Stub genérico para TODO lo demás
         }
       }
     })
     
-    // ✅ Espera las llamadas async del componente
-    await wrapper.vm.$nextTick()
+    // ✅ Espera todas las promesas y timers
+    await vi.advanceTimersByTime(0)
+    await vi.waitFor(() => wrapper.vm.$nextTick())
     return wrapper
   }
 
