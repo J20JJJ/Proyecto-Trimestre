@@ -11,7 +11,7 @@ vi.mock('@/stores/pokemonID', () => ({
 
 describe('mainNewComponent.vue - tests híbridos', () => {
   const props = {
-    pokemonImg: ['pikachu.png', 'bulbasaur.png'],
+    pokemonImg: ['25.png', '1.png'],
     pokemonName: ['Pikachu', 'Bulbasaur'],
     pokemonID: [25, 1],
     componente_actual: 'HomePage',

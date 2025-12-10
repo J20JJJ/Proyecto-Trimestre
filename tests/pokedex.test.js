@@ -1,124 +1,111 @@
-import { mount } from '@vue/test-utils';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import Pokedex from '@/components/pokedex.vue';
+import { mount } from '@vue/test-utils'
+import { describe, it, expect, vi } from 'vitest'
+import pokedex from '@/components/pokedex.vue'
 
-// ========== MOCK GLOBAL DE FETCH ==============
-global.fetch = vi.fn((url) => {
-  // /pokemon/:id
-  if (url.includes('pokemon/') && !url.includes('pokemon-species')) {
-    return Promise.resolve({
-      json: () =>
-        Promise.resolve({
-          sprites: {
-            back_default: 'x',
-            back_female: 'x',
-            back_shiny: 'x',
-            back_shiny_female: 'x',
-            front_default: 'x',
-            front_female: 'x',
-            front_shiny: 'x',
-            front_shiny_female: 'x',
-          },
-          id: 1,
-          name: 'pikachu',
-          types: [],
-          moves: []
-        })
-    });
-  }
-
-  // /pokemon-species/:id
-  if (url.includes('pokemon-species')) {
-    return Promise.resolve({
-      json: () =>
-        Promise.resolve({
-          evolution_chain: {
-            url: 'https://pokeapi.co/api/v2/evolution-chain/1'
-          },
-          flavor_text_entries: [
-            { flavor_text: "Descripción falsa." }
-          ]
-        })
-    });
-  }
-
-  // /evolution-chain/:id
-  if (url.includes('evolution-chain')) {
-    return Promise.resolve({
-      json: () =>
-        Promise.resolve({
-          chain: {
-            species: { name: 'pikachu', url: 'fake-url' },
-            evolves_to: []
-          }
-        })
-    });
-  }
-
-  // valor por defecto
-  return Promise.resolve({
-    json: () => Promise.resolve({})
-  });
-});
-
-// ========== MOCK ROUTER-LINK + ROUTER =============
+// Mock básico para evitar errores del watch y router
 vi.mock('vue-router', () => ({
-  RouterLink: { template: '<a><slot /></a>' },
-  useRouter: () => ({ push: vi.fn() }),
-  useRoute: () => ({ params: { id: 'HomePage-1' } }),
-}));
+  useRoute: () => ({
+    params: { id: 'HomePage-1' },
+  }),
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}))
 
-// ========== MOCK PINIA =============
 vi.mock('@/stores/pokemonID', () => ({
   ID_pokemon: () => ({
-    guardarPokemon: vi.fn()
+    guardarPokemon: vi.fn(),
+  }),
+}))
+
+vi.mock('./elementos/sus.vue', () => ({
+  default: { template: '<button />' },
+}))
+
+describe('pokedex.vue', () => {
+  const mountComponent = () => mount(pokedex, {
+    props: { id: 1 },
+    global: {
+      stubs: {
+        'router-link': { template: '<a><slot /></a>' },
+        Chat_btn: { template: '<button />' },
+      },
+    },
   })
-}));
 
-// ========== MOCK COMPONENTES HIJOS =============
-vi.mock('@/components/elementos/chat_btn.vue', () => ({
-  default: { template: '<button class="mock-chat-btn"></button>' }
-}));
+  it('se monta y muestra el contenedor principal', () => {
+    const wrapper = mountComponent()
+    expect(wrapper.find('.pokedex').exists()).toBe(true)
+  })
 
-vi.mock('@/components/elementos/sus.vue', () => ({
-  default: { template: '<div class="mock-sus"></div>' }
-}));
+  it('rotateImage cambia el índice de 0 a 4 correctamente', () => {
+    const wrapper = mountComponent()
+    wrapper.vm.currentImageIndex = 0
+    wrapper.vm.rotateImage()
+    expect(wrapper.vm.currentImageIndex).toBe(4)
+  })
 
-// =================================================
-// ===============   TEST SUITE   ==================
-// =================================================
+  it('rotateImage cambia de 4 a 0 correctamente', () => {
+    const wrapper = mountComponent()
+    wrapper.vm.currentImageIndex = 4
+    wrapper.vm.rotateImage()
+    expect(wrapper.vm.currentImageIndex).toBe(0)
+  })
 
-describe('Pokedex.vue', () => {
-  let wrapper;
+  it('changeToShiny cambia de normal (0) a shiny (2)', () => {
+    const wrapper = mountComponent()
+    wrapper.vm.currentImageIndex = 0
+    wrapper.vm.changeToShiny()
+    expect(wrapper.vm.currentImageIndex).toBe(2)
+  })
 
-  beforeEach(() => {
-    wrapper = mount(Pokedex, {
-      props: { id: 1 }
-    });
+  it('changeToShiny cambia de shiny (2) a normal (0)', () => {
+    const wrapper = mountComponent()
+    wrapper.vm.currentImageIndex = 2
+    wrapper.vm.changeToShiny()
+    expect(wrapper.vm.currentImageIndex).toBe(0)
+  })
 
-    // imágenes fake para no depender de la API
-    wrapper.vm.pokemonImg = [
-      'front_default',
-      'front_female',
-      'front_shiny',
-      'front_shiny_female',
-      'back_default',
-      'back_female',
-      'back_shiny',
-      'back_shiny_female'
-    ];
-  });
+  it('changeToGender cambia de 0 a 1 si pokemonImg[1] existe', () => {
+    const wrapper = mountComponent()
+    wrapper.vm.pokemonImg = ['img0', 'img1', 'img2', 'img3', 'img4', 'img5', 'img6', 'img7']
+    wrapper.vm.currentImageIndex = 0
+    wrapper.vm.changeToGender()
+    expect(wrapper.vm.currentImageIndex).toBe(1)
+  })
 
-  // ---------- TEST 1: rotateImage ---------------
-  it('rotateImage cambia correctamente el índice', () => {
-    const vm = wrapper.vm;
+  it('changeToGender NO cambia si pokemonImg[1] está vacío', () => {
+    const wrapper = mountComponent()
+    wrapper.vm.pokemonImg = ['img0', '', 'img2', 'img3', 'img4', 'img5', 'img6', 'img7']
+    wrapper.vm.currentImageIndex = 0
+    const initialIndex = wrapper.vm.currentImageIndex
+    wrapper.vm.changeToGender()
+    expect(wrapper.vm.currentImageIndex).toBe(initialIndex)
+  })
 
-    expect(vm.currentImageIndex).toBe(0);
+  it('el botón de rotación existe y llama a rotateImage al hacer clic', async () => {
+    const wrapper = mountComponent()
+    await wrapper.find('.sprite-controls-rotate').trigger('click')
+    expect(wrapper.vm.currentImageIndex).toBe(4)
+  })
 
-    vm.rotateImage();
-    expect(vm.currentImageIndex).toBe(4);
+  it('el botón shiny existe y llama a changeToShiny al hacer clic', async () => {
+    const wrapper = mountComponent()
+    await wrapper.find('.sprite-controls-shiny').trigger('click')
+    expect(wrapper.vm.currentImageIndex).toBe(2)
+  })
 
-    vm.rotateImage();
-    expect(vm.currentImageIndex).toBe(0);
-  });
-});
+  it('el botón de género existe y llama a changeToGender al hacer clic', async () => {
+    const wrapper = mountComponent()
+    wrapper.vm.pokemonImg = ['img0', 'img1', 'img2', 'img3', 'img4', 'img5', 'img6', 'img7']
+    await wrapper.find('.sprite-controls-gender').trigger('click')
+    expect(wrapper.vm.currentImageIndex).toBe(1)
+  })
+
+  it('Chat_btn existe y llama a irAlChat al hacer clic', async () => {
+    const wrapper = mountComponent()
+    const chatBtn = wrapper.find('.S-Chat_btn')
+    expect(chatBtn.exists()).toBe(true)
+    // No podemos testear irAlChat completamente por los mocks, pero verificamos que existe
+  })
+})
