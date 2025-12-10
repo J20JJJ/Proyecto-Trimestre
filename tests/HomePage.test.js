@@ -1,56 +1,102 @@
 import { mount } from '@vue/test-utils'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import HomePage from "@/assets/pg/HomePage.vue"
 
-// Mock fetch para evitar llamadas reales a PokeAPI
-global.fetch = vi.fn()
+const flushPromises = () => new Promise(setImmediate)
 
 describe('HomePage.vue', () => {
-    it('se monta correctamente con buscador', () => {
-        const wrapper = mount(HomePage, {
+    let wrapper
+
+    beforeEach(() => {
+        // Resetea fetch antes de cada test para aislarlos
+        global.fetch = vi.fn()
+        wrapper = mount(HomePage, {
             global: {
                 stubs: {
                     mainNewComponent: true,
-                    boton_cargarMas: true
+                    boton_cargarMas: true,
+                    'router-link': true
                 }
             }
         })
+    })
+
+    afterEach(() => {
+        // Desmonta para evitar que onMounted() siga corriendo asincronamente
+        wrapper.unmount()
+        vi.restoreAllMocks()
+    })
+
+    it('se monta correctamente con buscador', async () => {
+        await flushPromises()
         expect(wrapper.exists()).toBe(true)
         expect(wrapper.find('.search-input').exists()).toBe(true)
     })
 
-    it('query inicial está vacío', () => {
-        const wrapper = mount(HomePage)
+    it('query inicial está vacío', async () => {
+        await flushPromises()
         expect(wrapper.vm.query).toBe('')
     })
 
     it('cargarMasPokemons añade pokemons a las listas', async () => {
-        const wrapper = mount(HomePage, {
-            global: { stubs: { mainNewComponent: true, boton_cargarMas: true } }
-        })
-
-        // Poblar listaCompletaPokemons manualmente (simula onBeforeMount)
-        wrapper.vm.listaCompletaPokemons = Array(10).fill({ name: 'test' })
-
-        const initialLength = wrapper.vm.pokemonName.length
-
-        // Mock getPokemonData (esto SÍ se usa)
-        global.fetch = vi.fn().mockResolvedValue({
-            ok: true,
-            json: () => Promise.resolve({
-                sprites: { front_default: '25.png' },
-                name: 'pikachu',
-                id: 25
+        // Preparamos un mock de fetch consistente
+        global.fetch = vi.fn()
+            // Primera llamada: lista general
+            .mockResolvedValueOnce({
+                ok: true,
+                json: () => Promise.resolve({
+                    results: [
+                        { name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25' },
+                        { name: 'charmander', url: 'https://pokeapi.co/api/v2/pokemon/4' }
+                    ]
+                })
             })
+            // Segunda llamada: detalle de Pikachu
+            .mockResolvedValueOnce({
+                ok: true,
+                json: () => Promise.resolve({
+                    sprites: { front_default: '25.png' },
+                    name: 'pikachu',
+                    id: 25
+                })
+            })
+            // Tercera llamada: detalle de Charmander
+            .mockResolvedValueOnce({
+                ok: true,
+                json: () => Promise.resolve({
+                    sprites: { front_default: '4.png' },
+                    name: 'charmander',
+                    id: 4
+                })
+            })
+
+        const wrapper = mount(HomePage, {
+            global: {
+                stubs: {
+                    mainNewComponent: true,
+                    boton_cargarMas: true,
+                    'router-link': true
+                }
+            }
         })
 
-        await wrapper.vm.cargarMasPokemons()
+        // Espera a que onMounted cargue las promesas
+        await flushPromises()
 
-        expect(wrapper.vm.pokemonName.length).toBeGreaterThan(initialLength)
+        // Ejecuta de nuevo cargarMasPokemons manualmente
+        await wrapper.vm.cargarMasPokemons()
+        await flushPromises()
+
+        // Verificamos que sí se agregaron pokemons
+        expect(wrapper.vm.pokemonName).toContain('pikachu')
+        expect(wrapper.vm.pokemonName).toContain('charmander')
+        expect(wrapper.vm.pokemonImg).toContain('4.png')
+        expect(wrapper.vm.pokemonID).toContain(25)
     })
 
-    it('filtrarPokemons filtra por nombre', () => {
-        const wrapper = mount(HomePage)
+
+    it('filtrarPokemons filtra por nombre', async () => {
+        await flushPromises()
         wrapper.vm.pokemonName = ['pikachu', 'charmander', 'bulbasaur']
         wrapper.vm.pokemonImg = ['25.png', '4.png', '1.png']
         wrapper.vm.pokemonID = [25, 4, 1]
@@ -62,8 +108,8 @@ describe('HomePage.vue', () => {
         expect(wrapper.vm.pokemonsFiltradosName.length).toBe(1)
     })
 
-    it('filtrarPokemons filtra por ID', () => {
-        const wrapper = mount(HomePage)
+    it('filtrarPokemons filtra por ID', async () => {
+        await flushPromises()
         wrapper.vm.pokemonName = ['pikachu', 'charmander']
         wrapper.vm.pokemonID = [25, 4]
 
@@ -72,5 +118,4 @@ describe('HomePage.vue', () => {
 
         expect(wrapper.vm.pokemonsFiltradosID[0]).toBe(25)
     })
-
 })
