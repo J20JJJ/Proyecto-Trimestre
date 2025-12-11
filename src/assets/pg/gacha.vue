@@ -391,9 +391,10 @@ function animateText() {
     animatedDiv.value.classList.remove("text-white");
     // Quita la clase después de 2 segundos
     setTimeout(() => {
+      if (!animatedDiv.value) return;
       animatedDiv.value.classList.remove("animated-text");
       animatedDiv.value.classList.add("text-white");
-    }, 1000); // Duración de la animación
+    }, 1000);
   }
 }
 
