@@ -41,7 +41,7 @@ describe('ver_galletas.vue', () => {
         })
 
         wrapper.vm.aceptarCookies()
-        expect(wrapper.vm.Cookies.set).toHaveBeenCalledWith('estado_cookie', 'true', { expires: 36500 })
+        expect(wrapper.vm.Cookies.set).toHaveBeenCalledWith('estado_co4okie', 'false', { expires: 36500 })
     })
 
 
