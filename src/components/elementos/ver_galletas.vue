@@ -197,7 +197,7 @@ import {marked} from "marked";
 const clase = ref('reverse1');
 
 function aceptarCookies(){
-  Cookies.set("estado_cookie", 'false', { expires: 36500 });
+  Cookies.set("estado_cookie", 'true', { expires: 36500 });
 }
 
 const isModalVisible = ref(false);
