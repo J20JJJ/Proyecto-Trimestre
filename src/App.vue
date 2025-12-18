@@ -31,7 +31,7 @@ const mostrarGalletas = ref(true);
 
 const checkCookie = () => {
   const estadoCookie = Cookies.get('estado_cookie');
-  mostrarGalletas.value = estadoCookie !== 'true';
+  mostrarGalletas.value = estadoCookie !== 'false';
 };
 
 onMounted(() => {
